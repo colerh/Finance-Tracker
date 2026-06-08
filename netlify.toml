@@ -1,0 +1,10 @@
+[build]
+  functions = "netlify/functions"
+  publish   = "."
+
+[functions]
+  node_bundler = "esbuild"
+
+[dev]
+  port       = 3000
+  targetPort = 3000
