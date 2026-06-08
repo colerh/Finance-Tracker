@@ -12,9 +12,6 @@ const plaidClient = new PlaidApi(
   })
 );
 
-// Uses /transactions/sync (cursor-based) so the frontend can do
-// incremental updates: first call gets all history, subsequent calls
-// get only new/modified/removed since the stored cursor.
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
 
@@ -29,8 +26,8 @@ exports.handler = async (event) => {
     const removed  = [];
     let   nextCursor = cursor || '';
     let   hasMore    = true;
+    let   accounts   = [];
 
-    // Paginate until Plaid says there are no more pages
     while (hasMore) {
       const resp = await plaidClient.transactionsSync({
         access_token,
@@ -42,11 +39,12 @@ exports.handler = async (event) => {
       removed.push(...resp.data.removed);
       nextCursor = resp.data.next_cursor;
       hasMore    = resp.data.has_more;
+      if (resp.data.accounts?.length) accounts = resp.data.accounts;
     }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ added, modified, removed, next_cursor: nextCursor }),
+      body: JSON.stringify({ added, modified, removed, next_cursor: nextCursor, accounts }),
     };
   } catch (err) {
     const plaidErr = err.response?.data;

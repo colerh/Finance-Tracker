@@ -13,24 +13,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg:          #090912;
-      --surface:     #111120;
-      --card:        #16162b;
-      --card-hover:  #1d1d38;
-      --border:      #252545;
-      --text:        #e2e8f0;
-      --muted:       #5a6480;
-      --accent:      #6366f1;
-      --accent-glow: rgba(99,102,241,0.18);
-      --green:       #22c55e;
-      --yellow:      #eab308;
-      --red:         #ef4444;
-      --font:        'Space Mono','Courier New',monospace;
-      --num-font:    'Inter',system-ui,sans-serif;
-      --radius:      14px;
-      --radius-sm:   7px;
-      --shadow:      0 8px 32px rgba(0,0,0,0.5);
+    :root{
+      --bg:#090912;--surface:#111120;--card:#16162b;--card-hover:#1d1d38;
+      --border:#252545;--text:#e2e8f0;--muted:#5a6480;
+      --accent:#6366f1;--accent-glow:rgba(99,102,241,0.18);
+      --green:#22c55e;--yellow:#eab308;--red:#ef4444;
+      --font:'Space Mono','Courier New',monospace;
+      --num-font:'Inter',system-ui,sans-serif;
+      --radius:14px;--radius-sm:7px;--shadow:0 8px 32px rgba(0,0,0,0.5);
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
@@ -38,38 +28,35 @@
     button{cursor:pointer}
     input:focus{outline:none}
 
-    /* ── Sticky shell ── */
     .sticky-top{position:sticky;top:0;z-index:200}
 
-    /* ── Header ── */
+    /* Header */
     .app-header{
       background:var(--surface);border-bottom:1px solid var(--border);
-      padding:14px 28px;
-      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 28px;display:flex;align-items:center;justify-content:space-between;
       gap:16px;flex-wrap:wrap;
     }
-    .header-left  {display:flex;align-items:center;gap:14px}
+    .header-left{display:flex;align-items:center;gap:14px}
     .header-center{text-align:center;flex:1;min-width:0}
-    .header-right {display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .header-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
     .app-logo{font-size:18px;font-weight:700;color:var(--accent);letter-spacing:-.5px;white-space:nowrap}
     .month-pill{
       background:var(--accent-glow);color:var(--accent);
       border:1px solid rgba(99,102,241,.35);
-      padding:3px 12px;border-radius:20px;
-      font-size:11px;font-weight:700;white-space:nowrap;
+      padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;
     }
-    .total-label {font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+    .total-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
     .total-amount{font-family:var(--num-font);font-variant-numeric:tabular-nums;font-size:24px;font-weight:700;line-height:1.2;transition:color .3s}
-    .total-sub   {font-family:var(--num-font);font-size:10px;color:var(--muted)}
-    .sync-info   {font-size:10px;color:var(--muted);text-align:right;white-space:nowrap}
+    .total-sub{font-family:var(--num-font);font-size:10px;color:var(--muted)}
+    .sync-info{font-size:10px;color:var(--muted);text-align:right;white-space:nowrap}
 
-    /* ── Tab bar ── */
+    /* Tab bar */
     .tab-bar{
       display:flex;background:var(--surface);
       border-bottom:1px solid var(--border);padding:0 28px;
     }
     .tab-btn{
-      padding:10px 18px;background:none;border:none;
+      padding:10px 16px;background:none;border:none;
       border-bottom:2px solid transparent;
       color:var(--muted);font-family:var(--font);font-size:10px;
       font-weight:700;text-transform:uppercase;letter-spacing:1.2px;
@@ -79,7 +66,7 @@
     .tab-btn:hover{color:var(--text)}
     .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
 
-    /* ── Buttons ── */
+    /* Buttons */
     .btn{
       display:inline-flex;align-items:center;gap:5px;
       padding:8px 16px;border:none;border-radius:var(--radius-sm);
@@ -96,23 +83,19 @@
     .btn-ghost:hover{color:var(--red);border-color:rgba(239,68,68,.3);opacity:1}
     .btn-sm{padding:5px 12px;font-size:11px}
 
-    /* ── Connect screen ── */
+    /* Connect screen */
     #connect-screen{
       display:flex;flex-direction:column;align-items:center;justify-content:center;
       min-height:calc(100vh - 110px);padding:32px 24px;gap:24px;
     }
     .connect-card{
       background:var(--card);border:1px solid var(--border);
-      border-radius:var(--radius);padding:48px 40px;
-      max-width:420px;width:100%;text-align:center;
+      border-radius:var(--radius);padding:48px 40px;max-width:420px;width:100%;text-align:center;
     }
-    .connect-icon {font-size:52px;margin-bottom:18px}
+    .connect-icon{font-size:52px;margin-bottom:18px}
     .connect-title{font-size:22px;font-weight:700;margin-bottom:10px}
-    .connect-sub  {color:var(--muted);font-size:12px;margin-bottom:28px;line-height:1.8}
-    .connect-divider{
-      display:flex;align-items:center;gap:12px;
-      margin:20px 0;color:var(--muted);font-size:10px;
-    }
+    .connect-sub{color:var(--muted);font-size:12px;margin-bottom:28px;line-height:1.8}
+    .connect-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:10px}
     .connect-divider::before,.connect-divider::after{content:'';flex:1;height:1px;background:var(--border)}
     .sandbox-note{
       margin-top:20px;background:var(--accent-glow);
@@ -120,9 +103,9 @@
       padding:12px 16px;font-size:11px;color:var(--accent);text-align:left;line-height:1.8;
     }
 
-    /* ── Main wrap ── */
+    /* Main wrap */
     .main-wrap{max-width:1180px;margin:0 auto;padding:28px 24px 64px}
-    .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .section-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
     .section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted)}
     .demo-banner{
       display:flex;align-items:center;justify-content:space-between;
@@ -133,12 +116,35 @@
       font-size:11px;color:var(--accent);font-weight:700;
     }
 
-    /* ── Bucket cards ── */
+    /* Total aggregate card */
+    .total-agg-card{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:var(--radius);padding:22px 24px;margin-bottom:28px;
+    }
+    .total-agg-top{
+      display:flex;align-items:flex-start;justify-content:space-between;
+      gap:16px;flex-wrap:wrap;margin-bottom:14px;
+    }
+    .total-agg-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:3px}
+    .total-agg-month{font-size:13px;font-weight:700}
+    .total-agg-nums{text-align:right;font-family:var(--num-font);font-variant-numeric:tabular-nums}
+    .total-agg-spent{display:block;font-size:30px;font-weight:700;line-height:1.1}
+    .total-agg-of{font-size:12px;color:var(--muted)}
+    .total-agg-pct{font-size:12px;font-weight:700;margin-left:8px}
+    .seg-bar-track{
+      height:10px;background:rgba(255,255,255,.06);
+      border-radius:10px;overflow:hidden;display:flex;gap:1px;margin-bottom:14px;
+    }
+    .seg-bar-track>div{height:100%;min-width:2px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+    .seg-legend{display:flex;flex-wrap:wrap;gap:6px 14px}
+    .seg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+    .seg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+    /* Bucket cards */
     .buckets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin-bottom:48px}
     .bucket-card{
       background:var(--card);border:1px solid var(--border);
-      border-radius:var(--radius);padding:20px;
-      transition:border-color .2s,background .2s;
+      border-radius:var(--radius);padding:20px;transition:border-color .2s,background .2s;
     }
     .bucket-card:hover{border-color:rgba(99,102,241,.4);background:var(--card-hover)}
     .bucket-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
@@ -164,15 +170,28 @@
     .prog-fill.y{background:var(--yellow)}
     .prog-fill.r{background:var(--red);box-shadow:0 0 10px rgba(239,68,68,.4)}
     .bucket-foot{display:flex;justify-content:space-between;align-items:flex-end}
-    .spent-label {font-size:10px;color:var(--muted);margin-bottom:2px}
+    .spent-label{font-size:10px;color:var(--muted);margin-bottom:2px}
     .spent-amount{font-family:var(--num-font);font-variant-numeric:tabular-nums;font-size:21px;font-weight:700;line-height:1}
-    .remain-label {font-size:10px;color:var(--muted);text-align:right;margin-bottom:2px}
+    .remain-label{font-size:10px;color:var(--muted);text-align:right;margin-bottom:2px}
     .remain-amount{font-family:var(--num-font);font-variant-numeric:tabular-nums;font-size:14px;font-weight:700;text-align:right}
     .remain-amount.over{color:var(--red)}
-    .remain-amount.ok  {color:var(--green)}
+    .remain-amount.ok{color:var(--green)}
 
-    /* ── Transactions ── */
-    .date-group {margin-bottom:28px}
+    /* Transaction rows */
+    .filter-toggle{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+    .filter-btn{
+      padding:5px 12px;background:none;border:none;
+      color:var(--muted);font-family:var(--font);font-size:10px;
+      font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+      cursor:pointer;transition:background .15s,color .15s;
+    }
+    .filter-btn.active{background:var(--accent);color:#fff}
+    .account-badge{
+      font-size:9px;color:var(--muted);
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:4px;padding:1px 5px;white-space:nowrap;
+    }
+    .date-group{margin-bottom:28px}
     .date-header{
       font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
       color:var(--muted);padding-bottom:8px;
@@ -184,22 +203,36 @@
       border-radius:var(--radius-sm);cursor:pointer;transition:background .15s;
     }
     .txn-row:hover{background:var(--card)}
+    .txn-row.no-click{cursor:default}
+    .txn-row.no-click:hover{background:transparent}
     .txn-left{display:flex;align-items:center;gap:12px;min-width:0}
     .txn-bucket-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
     .txn-info{min-width:0}
     .txn-merchant{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .txn-meta{display:flex;align-items:center;gap:6px;margin-top:3px}
+    .txn-meta{display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap}
     .cat-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
     .overridden-dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.7;flex-shrink:0}
     .txn-right{text-align:right;flex-shrink:0}
     .txn-amount{font-family:var(--num-font);font-variant-numeric:tabular-nums;font-size:14px;font-weight:700}
-    .txn-amount.debit {color:var(--red)}
+    .txn-amount.debit{color:var(--red)}
     .txn-amount.credit{color:var(--green)}
     .empty-state{text-align:center;padding:72px 24px;color:var(--muted)}
     .empty-icon{font-size:44px;margin-bottom:14px}
     .empty-text{font-size:12px}
 
-    /* ── Modal ── */
+    /* Income tab */
+    .income-hero-card{
+      background:linear-gradient(135deg,rgba(34,197,94,.10),rgba(16,185,129,.05));
+      border:1px solid rgba(34,197,94,.22);
+      border-radius:var(--radius);padding:24px;margin-bottom:28px;
+    }
+    .income-hero-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--green);margin-bottom:6px}
+    .income-hero-amount{font-family:var(--num-font);font-variant-numeric:tabular-nums;font-size:36px;font-weight:700;color:var(--green);line-height:1.1}
+    .income-hero-sub{font-size:11px;color:var(--muted);margin-top:4px}
+    .income-month-head{display:flex;justify-content:space-between;align-items:center}
+    .income-month-total{font-family:var(--num-font);font-variant-numeric:tabular-nums;color:var(--green);font-weight:700}
+
+    /* Modal */
     .overlay{
       display:none;position:fixed;inset:0;
       background:rgba(0,0,0,.72);backdrop-filter:blur(6px);
@@ -224,34 +257,31 @@
       border-radius:var(--radius-sm);color:var(--text);
       font-family:var(--font);font-size:12px;transition:all .15s;
     }
-    .picker-opt:hover {border-color:var(--accent);color:var(--accent)}
+    .picker-opt:hover{border-color:var(--accent);color:var(--accent)}
     .picker-opt.active{border-color:var(--accent);background:var(--accent-glow);color:var(--accent)}
     .modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
 
-    /* ── Loading ── */
+    /* Loading */
     .load-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;align-items:center;justify-content:center}
     .load-overlay.on{display:flex}
     .load-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 32px;display:flex;align-items:center;gap:16px;font-size:13px;box-shadow:var(--shadow)}
     .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--accent);border-radius:50%;animation:spin .65s linear infinite;flex-shrink:0}
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    /* ── Buckets settings tab ── */
+    /* Bucket settings tab */
     .bucket-settings-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
     .bucket-setting-row{
-      display:grid;
-      grid-template-columns:46px 1fr 130px 38px 34px;
+      display:grid;grid-template-columns:46px 1fr 130px 38px 34px;
       align-items:center;gap:10px;
       background:var(--card);border:1px solid var(--border);
-      border-radius:var(--radius-sm);padding:10px 14px;
-      transition:border-color .15s;
+      border-radius:var(--radius-sm);padding:10px 14px;transition:border-color .15s;
     }
     .bucket-setting-row:hover{border-color:rgba(99,102,241,.3)}
     .icon-input{
       width:38px;height:38px;padding:0;
       background:var(--surface);border:1px solid var(--border);
       border-radius:8px;text-align:center;font-size:18px;
-      color:var(--text);font-family:inherit;cursor:text;
-      transition:border-color .15s;
+      color:var(--text);font-family:inherit;cursor:text;transition:border-color .15s;
     }
     .icon-input:focus{border-color:var(--accent)}
     .name-input{
@@ -265,8 +295,7 @@
     .budget-row{
       display:flex;align-items:center;gap:5px;
       background:var(--surface);border:1px solid var(--border);
-      border-radius:var(--radius-sm);padding:0 8px;
-      transition:border-color .15s;
+      border-radius:var(--radius-sm);padding:0 8px;transition:border-color .15s;
     }
     .budget-row:focus-within{border-color:var(--accent)}
     .budget-prefix{color:var(--muted);font-family:var(--num-font);font-size:12px}
@@ -307,16 +336,18 @@
       border-radius:var(--radius-sm);font-size:11px;color:var(--muted);line-height:1.8;
     }
 
-    /* ── Responsive ── */
+    /* Responsive */
     @media(max-width:680px){
-      .app-header  {padding:12px 16px}
+      .app-header{padding:12px 16px}
       .header-center{display:none}
-      .tab-bar     {padding:0 16px}
-      .main-wrap   {padding:20px 16px 48px}
+      .tab-bar{padding:0 16px}
+      .main-wrap{padding:20px 16px 48px}
       .buckets-grid{grid-template-columns:1fr}
-      .picker-grid {grid-template-columns:1fr}
+      .picker-grid{grid-template-columns:1fr}
       .connect-card{padding:32px 22px}
       .bucket-setting-row{grid-template-columns:40px 1fr 100px 34px 30px;gap:7px;padding:8px 10px}
+      .total-agg-spent{font-size:22px}
+      .income-hero-amount{font-size:26px}
     }
     @media(max-width:440px){
       .header-right .sync-info{display:none}
@@ -335,7 +366,7 @@
     <div class="header-center">
       <div class="total-label">Total Spent</div>
       <div class="total-amount" id="total-amount">$0.00</div>
-      <div class="total-sub"   id="total-sub">of $0.00 budgeted</div>
+      <div class="total-sub" id="total-sub">of $0.00 budgeted</div>
     </div>
     <div class="header-right">
       <div class="sync-info" id="sync-info"></div>
@@ -344,12 +375,14 @@
     </div>
   </header>
   <nav class="tab-bar">
-    <button class="tab-btn active" id="tab-overview-btn" onclick="switchTab('overview')">Overview</button>
-    <button class="tab-btn"        id="tab-buckets-btn"  onclick="switchTab('buckets')">Buckets</button>
+    <button class="tab-btn active" id="tab-overview-btn"     onclick="switchTab('overview')">Overview</button>
+    <button class="tab-btn"        id="tab-transactions-btn" onclick="switchTab('transactions')">Transactions</button>
+    <button class="tab-btn"        id="tab-buckets-btn"      onclick="switchTab('buckets')">Buckets</button>
+    <button class="tab-btn"        id="tab-income-btn"       onclick="switchTab('income')">Income</button>
   </nav>
 </div>
 
-<!-- Tab 1: Overview -->
+<!-- Tab: Overview -->
 <div id="tab-overview">
   <div id="connect-screen">
     <div class="connect-card">
@@ -380,30 +413,46 @@
       <span>📊 Demo Mode — sample data only</span>
       <button class="btn btn-primary btn-sm" onclick="handleConnect()">Connect Real Bank</button>
     </div>
+    <div class="total-agg-card" id="total-agg-card"></div>
     <div class="section-header">
       <div class="section-title">Budget Buckets</div>
       <button class="btn btn-ghost btn-sm" id="disconnect-btn" onclick="handleDisconnect()" style="display:none">disconnect</button>
     </div>
     <div class="buckets-grid" id="buckets-grid"></div>
-    <div class="section-header">
-      <div class="section-title">Transactions — <span id="txn-month">—</span></div>
-    </div>
-    <div id="txn-container"></div>
   </div>
 </div>
 
-<!-- Tab 2: Buckets -->
-<div id="tab-buckets" style="display:none">
+<!-- Tab: Transactions -->
+<div id="tab-transactions" style="display:none">
   <div class="main-wrap">
     <div class="section-header">
-      <div class="section-title">Manage Buckets</div>
+      <div class="section-title">Transactions</div>
+      <div class="filter-toggle">
+        <button class="filter-btn active" id="filter-month-btn" onclick="setTxnFilter('month')">This Month</button>
+        <button class="filter-btn"        id="filter-all-btn"   onclick="setTxnFilter('all')">All Time</button>
+      </div>
     </div>
+    <div id="txn-tab-content"></div>
+  </div>
+</div>
+
+<!-- Tab: Buckets -->
+<div id="tab-buckets" style="display:none">
+  <div class="main-wrap">
+    <div class="section-header"><div class="section-title">Manage Buckets</div></div>
     <div class="bucket-settings-list" id="bucket-settings-list"></div>
     <button class="add-bucket-btn" onclick="addBucket()">+ Add New Bucket</button>
     <div class="settings-hint">
       Click any field to edit &mdash; changes save instantly.<br>
       Drag the color swatch to pick a new color. Budget is your monthly limit per bucket.
     </div>
+  </div>
+</div>
+
+<!-- Tab: Income -->
+<div id="tab-income" style="display:none">
+  <div class="main-wrap">
+    <div id="income-content"></div>
   </div>
 </div>
 
@@ -425,62 +474,46 @@
 
 <!-- Loading -->
 <div class="load-overlay" id="load-overlay">
-  <div class="load-card">
-    <div class="spinner"></div>
-    <span id="load-text">Loading…</span>
-  </div>
+  <div class="load-card"><div class="spinner"></div><span id="load-text">Loading…</span></div>
 </div>
 
 <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 <script>
-const BUCKET_DEFAULTS = [
-  {id:'food',         name:'Food & Dining',   icon:'🍔',color:'#f97316',budget:500 },
-  {id:'transport',    name:'Gas & Transport', icon:'⛽',  color:'#3b82f6',budget:200 },
-  {id:'housing',      name:'Rent & Housing',  icon:'🏠',color:'#8b5cf6',budget:1500},
-  {id:'utilities',    name:'Utilities',        icon:'💡',color:'#06b6d4',budget:150 },
-  {id:'groceries',    name:'Groceries',        icon:'🛒',color:'#10b981',budget:400 },
-  {id:'entertainment',name:'Entertainment',    icon:'🎉',color:'#ec4899',budget:200 },
-  {id:'health',       name:'Health & Wellness',icon:'💊',color:'#ef4444',budget:100 },
-  {id:'shopping',     name:'Shopping',         icon:'🛍️',color:'#eab308',budget:300 },
-  {id:'travel',       name:'Travel',           icon:'✈️', color:'#6366f1',budget:500 },
-  {id:'misc',         name:'Misc',             icon:'📦',color:'#64748b',budget:200 },
+const BUCKET_DEFAULTS=[
+  {id:'food',         name:'Food & Dining',    icon:'🍔',color:'#f97316',budget:500},
+  {id:'transport',    name:'Gas & Transport',  icon:'⛽', color:'#3b82f6',budget:200},
+  {id:'housing',      name:'Rent & Housing',   icon:'🏠',color:'#8b5cf6',budget:1500},
+  {id:'utilities',    name:'Utilities',         icon:'💡',color:'#06b6d4',budget:150},
+  {id:'groceries',    name:'Groceries',         icon:'🛒',color:'#10b981',budget:400},
+  {id:'entertainment',name:'Entertainment',     icon:'🎉',color:'#ec4899',budget:200},
+  {id:'health',       name:'Health & Wellness', icon:'💊',color:'#ef4444',budget:100},
+  {id:'shopping',     name:'Shopping',          icon:'🛍️',color:'#eab308',budget:300},
+  {id:'travel',       name:'Travel',            icon:'✈️', color:'#6366f1',budget:500},
+  {id:'misc',         name:'Misc',              icon:'📦',color:'#64748b',budget:200},
 ];
 
-const OLD_CAT_MAP = {
-  'Food and Drink':            c => c[1]==='Groceries'?'groceries':'food',
-  'Travel':                    c => c[1]==='Gas Stations'?'transport':'travel',
-  'Shops':                     ()=>'shopping',
-  'Recreation':                ()=>'entertainment',
-  'Healthcare':                ()=>'health',
-  'Service':                   ()=>'misc',
-  'Community':                 ()=>'misc',
-  'Government and Non-Profit': ()=>'misc',
-  'Payment':                   ()=>'misc',
-  'Transfer':                  ()=>'misc',
-  'Bank Fees':                 ()=>'misc',
-  'Interest':                  ()=>'misc',
-  'Tax':                       ()=>'misc',
-  'Utilities':                 ()=>'utilities',
-};
+const DEMO_ACCOUNTS=[
+  {account_id:'acc01',name:'Total Checking',   mask:'4321',type:'depository',subtype:'checking'},
+  {account_id:'acc02',name:'Sapphire Reserve', mask:'7890',type:'credit',    subtype:'credit card'},
+];
 
-const PFC_MAP = {
-  'FOOD_AND_DRINK':            p=>p.detailed?.includes('GROCERY')?'groceries':'food',
-  'TRANSPORTATION':            ()=>'transport',
-  'TRAVEL':                    ()=>'travel',
-  'ENTERTAINMENT':             ()=>'entertainment',
-  'GENERAL_MERCHANDISE':       ()=>'shopping',
-  'HOME_IMPROVEMENT':          ()=>'housing',
-  'RENT_AND_UTILITIES':        p=>(p.detailed||'').includes('RENT')?'housing':'utilities',
-  'MEDICAL':                   ()=>'health',
-  'PERSONAL_CARE':             ()=>'health',
-  'UTILITIES':                 ()=>'utilities',
-  'LOAN_PAYMENTS':             ()=>'misc',
-  'BANK_FEES':                 ()=>'misc',
-  'GENERAL_SERVICES':          ()=>'misc',
-  'GOVERNMENT_AND_NON_PROFIT': ()=>'misc',
-  'INCOME':                    ()=>null,
-  'TRANSFER_IN':               ()=>null,
-  'TRANSFER_OUT':              ()=>'misc',
+const OLD_CAT_MAP={
+  'Food and Drink':           c=>c[1]==='Groceries'?'groceries':'food',
+  'Travel':                   c=>c[1]==='Gas Stations'?'transport':'travel',
+  'Shops':                    ()=>'shopping','Recreation':()=>'entertainment',
+  'Healthcare':               ()=>'health','Service':()=>'misc','Community':()=>'misc',
+  'Government and Non-Profit':()=>'misc','Payment':()=>'misc','Transfer':()=>'misc',
+  'Bank Fees':                ()=>'misc','Interest':()=>'misc','Tax':()=>'misc','Utilities':()=>'utilities',
+};
+const PFC_MAP={
+  'FOOD_AND_DRINK':           p=>p.detailed?.includes('GROCERY')?'groceries':'food',
+  'TRANSPORTATION':           ()=>'transport','TRAVEL':()=>'travel',
+  'ENTERTAINMENT':            ()=>'entertainment','GENERAL_MERCHANDISE':()=>'shopping',
+  'HOME_IMPROVEMENT':         ()=>'housing',
+  'RENT_AND_UTILITIES':       p=>(p.detailed||'').includes('RENT')?'housing':'utilities',
+  'MEDICAL':                  ()=>'health','PERSONAL_CARE':()=>'health','UTILITIES':()=>'utilities',
+  'LOAN_PAYMENTS':            ()=>'misc','BANK_FEES':()=>'misc','GENERAL_SERVICES':()=>'misc',
+  'GOVERNMENT_AND_NON_PROFIT':()=>'misc','INCOME':()=>null,'TRANSFER_IN':()=>null,'TRANSFER_OUT':()=>'misc',
 };
 
 function makeDemoTxns(){
@@ -488,64 +521,64 @@ function makeDemoTxns(){
   const y=now.getFullYear(),mo=String(now.getMonth()+1).padStart(2,'0'),today=now.getDate();
   const d=n=>`${y}-${mo}-${String(Math.min(n,today)).padStart(2,'0')}`;
   return [
-    {transaction_id:'d01',merchant_name:'Rent Payment',         amount:1500.00,date:d(1), pending:false,category:['Payment']},
-    {transaction_id:'d02',merchant_name:'Con Edison',            amount:94.20, date:d(2), pending:false,category:['Utilities']},
-    {transaction_id:'d03',merchant_name:'Whole Foods Market',    amount:78.43, date:d(3), pending:false,category:['Food and Drink','Groceries']},
-    {transaction_id:'d04',merchant_name:'Verizon Wireless',      amount:85.00, date:d(3), pending:false,category:['Utilities']},
-    {transaction_id:'d05',merchant_name:'Netflix',               amount:15.99, date:d(4), pending:false,category:['Recreation']},
-    {transaction_id:'d06',merchant_name:'Shell Gas Station',     amount:52.18, date:d(5), pending:false,category:['Travel','Gas Stations']},
-    {transaction_id:'d07',merchant_name:'Chipotle',              amount:13.45, date:d(6), pending:false,category:['Food and Drink','Restaurants']},
-    {transaction_id:'d08',merchant_name:'Amazon',                amount:134.99,date:d(7), pending:false,category:['Shops']},
-    {transaction_id:'d09',merchant_name:"Trader Joe's",          amount:62.31, date:d(8), pending:false,category:['Food and Drink','Groceries']},
-    {transaction_id:'d10',merchant_name:'CVS Pharmacy',          amount:28.67, date:d(9), pending:false,category:['Healthcare']},
-    {transaction_id:'d11',merchant_name:'Uber',                  amount:18.20, date:d(10),pending:false,category:['Travel']},
-    {transaction_id:'d12',merchant_name:'Spotify',               amount:9.99,  date:d(11),pending:false,category:['Recreation']},
-    {transaction_id:'d13',merchant_name:'The Home Depot',        amount:87.54, date:d(12),pending:false,category:['Shops']},
-    {transaction_id:'d14',merchant_name:'Starbucks',             amount:6.75,  date:d(13),pending:false,category:['Food and Drink','Coffee Shop']},
-    {transaction_id:'d15',merchant_name:'Target',                amount:143.22,date:d(14),pending:false,category:['Shops']},
-    {transaction_id:'d16',merchant_name:'Planet Fitness',        amount:25.00, date:d(15),pending:false,category:['Healthcare']},
-    {transaction_id:'d17',merchant_name:'DoorDash',              amount:34.89, date:d(16),pending:false,category:['Food and Drink']},
-    {transaction_id:'d18',merchant_name:'AMC Theaters',         amount:22.50, date:d(17),pending:false,category:['Recreation']},
-    {transaction_id:'d19',merchant_name:'Walgreens',             amount:18.35, date:d(18),pending:false,category:['Healthcare']},
-    {transaction_id:'d20',merchant_name:'Delta Airlines',        amount:289.00,date:d(19),pending:true, category:['Travel']},
+    {transaction_id:'i01',merchant_name:'Direct Deposit',   amount:-4500.00,date:d(1), pending:false,account_id:'acc01',category:['Payroll'],personal_finance_category:{primary:'INCOME',   detailed:'INCOME_WAGES'}},
+    {transaction_id:'i02',merchant_name:'Freelance Payment',amount:-850.00, date:d(12),pending:false,account_id:'acc01',category:['Payroll'],personal_finance_category:{primary:'INCOME',   detailed:'INCOME_OTHER_INCOME'}},
+    {transaction_id:'d01',merchant_name:'Rent Payment',      amount:1500.00,date:d(1), pending:false,account_id:'acc01',category:['Payment']},
+    {transaction_id:'d02',merchant_name:'Con Edison',         amount:94.20,  date:d(2), pending:false,account_id:'acc01',category:['Utilities']},
+    {transaction_id:'d03',merchant_name:'Whole Foods Market', amount:78.43,  date:d(3), pending:false,account_id:'acc02',category:['Food and Drink','Groceries']},
+    {transaction_id:'d04',merchant_name:'Verizon Wireless',   amount:85.00,  date:d(3), pending:false,account_id:'acc01',category:['Utilities']},
+    {transaction_id:'d05',merchant_name:'Netflix',            amount:15.99,  date:d(4), pending:false,account_id:'acc02',category:['Recreation']},
+    {transaction_id:'d06',merchant_name:'Shell Gas Station',  amount:52.18,  date:d(5), pending:false,account_id:'acc02',category:['Travel','Gas Stations']},
+    {transaction_id:'d07',merchant_name:'Chipotle',           amount:13.45,  date:d(6), pending:false,account_id:'acc02',category:['Food and Drink','Restaurants']},
+    {transaction_id:'d08',merchant_name:'Amazon',             amount:134.99, date:d(7), pending:false,account_id:'acc02',category:['Shops']},
+    {transaction_id:'d09',merchant_name:"Trader Joe's",       amount:62.31,  date:d(8), pending:false,account_id:'acc02',category:['Food and Drink','Groceries']},
+    {transaction_id:'d10',merchant_name:'CVS Pharmacy',       amount:28.67,  date:d(9), pending:false,account_id:'acc02',category:['Healthcare']},
+    {transaction_id:'d11',merchant_name:'Uber',               amount:18.20,  date:d(10),pending:false,account_id:'acc02',category:['Travel']},
+    {transaction_id:'d12',merchant_name:'Spotify',            amount:9.99,   date:d(11),pending:false,account_id:'acc02',category:['Recreation']},
+    {transaction_id:'d13',merchant_name:'The Home Depot',     amount:87.54,  date:d(12),pending:false,account_id:'acc02',category:['Shops']},
+    {transaction_id:'d14',merchant_name:'Starbucks',          amount:6.75,   date:d(13),pending:false,account_id:'acc02',category:['Food and Drink','Coffee Shop']},
+    {transaction_id:'d15',merchant_name:'Target',             amount:143.22, date:d(14),pending:false,account_id:'acc02',category:['Shops']},
+    {transaction_id:'d16',merchant_name:'Planet Fitness',     amount:25.00,  date:d(15),pending:false,account_id:'acc02',category:['Healthcare']},
+    {transaction_id:'d17',merchant_name:'DoorDash',           amount:34.89,  date:d(16),pending:false,account_id:'acc01',category:['Food and Drink']},
+    {transaction_id:'d18',merchant_name:'AMC Theaters',       amount:22.50,  date:d(17),pending:false,account_id:'acc02',category:['Recreation']},
+    {transaction_id:'d19',merchant_name:'Walgreens',          amount:18.35,  date:d(18),pending:false,account_id:'acc02',category:['Healthcare']},
+    {transaction_id:'d20',merchant_name:'Delta Airlines',     amount:289.00, date:d(19),pending:true, account_id:'acc02',category:['Travel']},
   ].filter(t=>t.date<=d(today));
 }
 
-/* STATE */
-let buckets=[],transactions=[],overrides={},accessToken=null,cursor=null,lastSynced=null,isDemoMode=false,activeTxnId=null,pendingBid=null;
+/* State */
+let buckets=[],transactions=[],accounts=[],overrides={},
+    accessToken=null,cursor=null,lastSynced=null,
+    isDemoMode=false,activeTxnId=null,pendingBid=null,txnFilter='month';
 
-/* STORAGE */
+/* Storage */
 function loadStorage(){
   accessToken=localStorage.getItem('plaid_access_token');
   cursor=localStorage.getItem('plaid_cursor')||null;
-  const rawBuckets=localStorage.getItem('buckets');
-  if(rawBuckets){
-    try{buckets=JSON.parse(rawBuckets)}catch{buckets=BUCKET_DEFAULTS.map(b=>({...b}))}
-  } else {
+  const rawB=localStorage.getItem('buckets');
+  if(rawB){try{buckets=JSON.parse(rawB)}catch{buckets=BUCKET_DEFAULTS.map(b=>({...b}))}}
+  else{
     const saved=JSON.parse(localStorage.getItem('bucket_settings')||'{}');
     buckets=BUCKET_DEFAULTS.map(b=>({...b,budget:saved[b.id]?.budget??b.budget,name:saved[b.id]?.name??b.name}));
   }
   overrides=JSON.parse(localStorage.getItem('cat_overrides')||'{}');
   const rawS=localStorage.getItem('last_synced');
   lastSynced=rawS?new Date(rawS):null;
-  const rawT=localStorage.getItem('cached_txns');
-  if(rawT)transactions=JSON.parse(rawT);
+  try{const rawT=localStorage.getItem('cached_txns');if(rawT)transactions=JSON.parse(rawT);}catch{}
+  try{const rawA=localStorage.getItem('cached_accounts');if(rawA)accounts=JSON.parse(rawA);}catch{}
 }
 function saveBuckets(){localStorage.setItem('buckets',JSON.stringify(buckets))}
 function saveOverrides(){localStorage.setItem('cat_overrides',JSON.stringify(overrides))}
 function cacheTxns(){localStorage.setItem('cached_txns',JSON.stringify(transactions))}
+function cacheAccounts(){localStorage.setItem('cached_accounts',JSON.stringify(accounts))}
 
-/* CATEGORY */
+/* Category helpers */
+function isIncome(t){return t.amount<0}
 function getBucketId(txn){
-  if(overrides[txn.transaction_id]){
-    const oid=overrides[txn.transaction_id];
-    if(getBucket(oid))return oid;
-  }
+  if(isIncome(txn))return null;
+  if(overrides[txn.transaction_id]){const oid=overrides[txn.transaction_id];if(getBucket(oid))return oid;}
   const pfc=txn.personal_finance_category;
-  if(pfc?.primary){
-    const fn=PFC_MAP[pfc.primary];
-    if(fn){const r=fn(pfc);if(r===null)return null;if(r&&getBucket(r))return r;}
-  }
+  if(pfc?.primary){const fn=PFC_MAP[pfc.primary];if(fn){const r=fn(pfc);if(r===null)return null;if(r&&getBucket(r))return r;}}
   const cats=txn.category||[];
   const fn=OLD_CAT_MAP[cats[0]];
   if(fn){const r=fn(cats);if(r&&getBucket(r))return r;}
@@ -557,22 +590,33 @@ function currentMonthTxns(){return transactions.filter(t=>t.date?.startsWith(mon
 function spendByBucket(){
   const out={};
   buckets.forEach(b=>{out[b.id]=0});
-  currentMonthTxns().forEach(t=>{
-    if(t.amount<=0)return;
+  currentMonthTxns().filter(t=>!isIncome(t)).forEach(t=>{
     const bid=getBucketId(t);if(bid===null)return;
     if(out[bid]!==undefined)out[bid]+=t.amount;
     else{const fb=getBucket('misc')?.id||buckets[buckets.length-1]?.id;if(fb)out[fb]=(out[fb]||0)+t.amount;}
   });
   return out;
 }
+function accountLabel(t){
+  if(!t.account_id)return'';
+  const a=accounts.find(ac=>ac.account_id===t.account_id);
+  if(!a)return'';
+  return(a.name||a.official_name||'')+(a.mask?' ···'+a.mask:'');
+}
 
-/* TABS */
+/* Tabs */
 function switchTab(name){
-  ['overview','buckets'].forEach(t=>{
+  ['overview','transactions','buckets','income'].forEach(t=>{
     qs(`#tab-${t}`).style.display=t===name?'':'none';
     qs(`#tab-${t}-btn`).classList.toggle('active',t===name);
   });
   if(name==='buckets')renderBucketsTab();
+}
+function setTxnFilter(f){
+  txnFilter=f;
+  qs('#filter-month-btn').classList.toggle('active',f==='month');
+  qs('#filter-all-btn').classList.toggle('active',f==='all');
+  renderTransactionsTab();
 }
 
 /* API */
@@ -587,7 +631,7 @@ async function post(endpoint,body={}){
   return res.json();
 }
 
-/* PLAID */
+/* Plaid flow */
 async function handleConnect(){
   if(typeof Plaid==='undefined'){alert('Plaid Link script failed to load.\nDisable any ad blockers and try again.');return;}
   try{
@@ -603,7 +647,7 @@ async function handleConnect(){
           accessToken=access_token;cursor=null;isDemoMode=false;
           localStorage.setItem('plaid_access_token',access_token);
           localStorage.removeItem('plaid_cursor');localStorage.removeItem('cached_txns');
-          transactions=[];
+          transactions=[];accounts=[];
           await sync();
           switchTab('overview');
         }catch(e){console.error('exchange_token:',e);hideLoad();alert('Token exchange failed: '+e.message);}
@@ -614,17 +658,18 @@ async function handleConnect(){
 }
 async function handleSync(){if(!accessToken||isDemoMode)return;await sync();}
 
-/* SYNC */
+/* Sync */
 async function sync(){
   showLoad('Syncing transactions…');
   try{
-    const{added,modified,removed,next_cursor}=await post('transactions',{access_token:accessToken,cursor:cursor||undefined});
+    const{added,modified,removed,next_cursor,accounts:accts}=await post('transactions',{access_token:accessToken,cursor:cursor||undefined});
     const removedIds=new Set((removed||[]).map(t=>t.transaction_id));
     transactions=transactions.filter(t=>!removedIds.has(t.transaction_id));
     (modified||[]).forEach(u=>{const i=transactions.findIndex(t=>t.transaction_id===u.transaction_id);if(i>=0)transactions[i]=u;else transactions.push(u);});
     transactions.push(...(added||[]));
     cursor=next_cursor;
     if(cursor)localStorage.setItem('plaid_cursor',cursor);
+    if(accts?.length){accounts=accts;cacheAccounts();}
     lastSynced=new Date();
     localStorage.setItem('last_synced',lastSynced.toISOString());
     cacheTxns();render();
@@ -635,15 +680,14 @@ async function sync(){
   }finally{hideLoad();}
 }
 
-function loadDemo(){isDemoMode=true;transactions=makeDemoTxns();render();switchTab('overview');}
+function loadDemo(){isDemoMode=true;transactions=makeDemoTxns();accounts=DEMO_ACCOUNTS;render();switchTab('overview');}
 
-/* RENDER */
+/* Render */
 function render(){
   const now=new Date(),spend=spendByBucket();
   const total=Object.values(spend).reduce((a,b)=>a+b,0);
   const budget=buckets.reduce((a,b)=>a+b.budget,0);
   qs('#month-pill').textContent=now.toLocaleString('default',{month:'short',year:'numeric'});
-  qs('#txn-month').textContent =now.toLocaleString('default',{month:'long', year:'numeric'});
   const pct=budget>0?total/budget:0;
   qs('#total-amount').textContent='$'+total.toFixed(2);
   qs('#total-amount').style.color=pct>=1?'var(--red)':pct>=.8?'var(--yellow)':'var(--text)';
@@ -653,16 +697,47 @@ function render(){
   show('#sync-btn',linked);show('#disconnect-btn',linked);show('#connect-btn',!linked);show('#demo-banner',isDemoMode);
   const hasData=transactions.length>0||isDemoMode||accessToken;
   qs('#connect-screen').style.display=hasData?'none':'flex';
-  qs('#app-main').style.display      =hasData?'block':'none';
-  renderBuckets(spend);renderTxns();
+  qs('#app-main').style.display=hasData?'block':'none';
+  renderTotalCard(spend);
+  renderBuckets(spend);
+  renderTransactionsTab();
+  renderIncomeTab();
 }
 
+/* Total aggregate card */
+function renderTotalCard(spend){
+  const card=qs('#total-agg-card');if(!card)return;
+  const now=new Date();
+  const totalBudget=buckets.reduce((s,b)=>s+b.budget,0);
+  const totalSpend=Object.values(spend).reduce((s,v)=>s+v,0);
+  const pct=totalBudget>0?(totalSpend/totalBudget)*100:0;
+  const pctColor=pct>=100?'var(--red)':pct>=80?'var(--yellow)':'var(--green)';
+  const scale=totalBudget>0?100/Math.max(totalBudget,totalSpend):0;
+  const segs=buckets.filter(b=>(spend[b.id]||0)>0)
+    .map(b=>`<div style="width:${((spend[b.id]||0)*scale).toFixed(2)}%;background:${b.color}" title="${esc(b.name)}: $${(spend[b.id]||0).toFixed(2)}"></div>`).join('');
+  const legend=buckets.filter(b=>(spend[b.id]||0)>0)
+    .map(b=>`<div class="seg-item"><div class="seg-dot" style="background:${b.color}"></div><span>${b.icon} ${esc(b.name)} <strong style="color:var(--text)">$${(spend[b.id]||0).toFixed(0)}</strong></span></div>`).join('');
+  card.innerHTML=`
+<div class="total-agg-top">
+  <div>
+    <div class="total-agg-label">Monthly Budget</div>
+    <div class="total-agg-month">${now.toLocaleString('default',{month:'long',year:'numeric'})}</div>
+  </div>
+  <div class="total-agg-nums">
+    <span class="total-agg-spent" style="color:${pctColor}">$${totalSpend.toFixed(2)}</span>
+    <span class="total-agg-of">of $${totalBudget.toFixed(0)}</span>
+    <span class="total-agg-pct" style="color:${pctColor}">${pct.toFixed(0)}%</span>
+  </div>
+</div>
+<div class="seg-bar-track">${segs||'<div style="flex:1;opacity:0"></div>'}</div>
+${legend?`<div class="seg-legend">${legend}</div>`:''}`;
+}
+
+/* Bucket cards */
 function renderBuckets(spend){
   qs('#buckets-grid').innerHTML=buckets.map(b=>{
-    const s=spend[b.id]||0;
-    const pct=b.budget>0?Math.min((s/b.budget)*100,100):0;
-    const bar=pct<60?'g':pct<85?'y':'r';
-    const rem=b.budget-s;
+    const s=spend[b.id]||0,pct=b.budget>0?Math.min((s/b.budget)*100,100):0;
+    const bar=pct<60?'g':pct<85?'y':'r',rem=b.budget-s;
     return `
 <div class="bucket-card">
   <div class="bucket-head">
@@ -681,40 +756,107 @@ function renderBuckets(spend){
   }).join('');
 }
 
-function renderTxns(){
-  const container=qs('#txn-container');
-  const visible=(isDemoMode?transactions:currentMonthTxns())
-    .filter(t=>t.amount>0).filter(t=>getBucketId(t)!==null)
-    .sort((a,b)=>b.date.localeCompare(a.date));
-  if(!visible.length){container.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No transactions this month yet</div></div>';return;}
+/* Transactions tab */
+function renderTransactionsTab(){
+  const container=qs('#txn-tab-content');if(!container)return;
+  const source=txnFilter==='month'?currentMonthTxns():[...transactions];
+  const visible=source.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  if(!visible.length){
+    container.innerHTML='<div class="empty-state"><div class="empty-icon">💭</div><div class="empty-text">No transactions found</div></div>';
+    return;
+  }
   const groups={};
   visible.forEach(t=>{(groups[t.date]=groups[t.date]||[]).push(t);});
   container.innerHTML=Object.keys(groups).sort((a,b)=>b.localeCompare(a))
-    .map(date=>`<div class="date-group"><div class="date-header">${fmtDate(date)}</div>${groups[date].map(txnRow).join('')}</div>`).join('');
+    .map(date=>`<div class="date-group"><div class="date-header">${fmtDate(date)}</div>${groups[date].map(txnRowFull).join('')}</div>`).join('');
 }
 
-function txnRow(t){
-  const bid=getBucketId(t)||buckets[buckets.length-1]?.id||'misc';
-  const b=getBucket(bid),color=b?.color||'#64748b';
+function txnRowFull(t){
+  const inc=isIncome(t);
+  const bid=inc?null:(getBucketId(t)||buckets[buckets.length-1]?.id);
+  const b=bid?getBucket(bid):null;
+  const color=b?.color||'#64748b';
+  const icon=inc?'💰':(b?.icon||'📦');
   const merchant=t.merchant_name||t.name||'Unknown';
-  const manual=!!overrides[t.transaction_id];
+  const acctLbl=accountLabel(t);
+  const manual=!inc&&bid&&!!overrides[t.transaction_id];
+  const onclick=inc?'':`onclick="openModal('${esc(t.transaction_id)}')"`;
   return `
-<div class="txn-row" onclick="openModal('${esc(t.transaction_id)}')">
+<div class="txn-row${inc?' no-click':''}" ${onclick}>
   <div class="txn-left">
-    <div class="txn-bucket-icon" style="background:${color}1a;color:${color}">${b?.icon||'📦'}</div>
+    <div class="txn-bucket-icon" style="background:${inc?'rgba(34,197,94,.12)':color+'1a'};color:${inc?'var(--green)':color}">${icon}</div>
     <div class="txn-info">
       <div class="txn-merchant">${esc(merchant)}</div>
       <div class="txn-meta">
-        <span class="cat-badge" style="background:${color}1a;color:${color}">${manual?'<span class="overridden-dot"></span>':''}${esc(b?.name||'Misc')}</span>
+        ${inc
+          ?`<span class="cat-badge" style="background:rgba(34,197,94,.12);color:var(--green)">Income</span>`
+          :(b?`<span class="cat-badge" style="background:${color}1a;color:${color}">${manual?'<span class="overridden-dot"></span>':''}${esc(b.name)}</span>`:'')
+        }
+        ${acctLbl?`<span class="account-badge">${esc(acctLbl)}</span>`:''}
         ${t.pending?'<span style="font-size:9px;color:var(--muted)">pending</span>':''}
       </div>
     </div>
   </div>
-  <div class="txn-right"><div class="txn-amount debit">-$${t.amount.toFixed(2)}</div></div>
+  <div class="txn-right"><div class="txn-amount ${inc?'credit':'debit'}">${inc?'+':'-'}$${Math.abs(t.amount).toFixed(2)}</div></div>
 </div>`;
 }
 
-/* BUCKETS TAB */
+/* Income tab */
+function renderIncomeTab(){
+  const container=qs('#income-content');if(!container)return;
+  const pfx=monthPrefix();
+  const incomeTxns=transactions.filter(t=>isIncome(t)).sort((a,b)=>b.date.localeCompare(a.date));
+  const thisMonth=incomeTxns.filter(t=>t.date?.startsWith(pfx));
+  const thisMonthTotal=thisMonth.reduce((s,t)=>s+Math.abs(t.amount),0);
+  const now=new Date();
+  const hero=`
+<div class="income-hero-card">
+  <div>
+    <div class="income-hero-label">Income — ${now.toLocaleString('default',{month:'long',year:'numeric'})}</div>
+    <div class="income-hero-amount">+$${thisMonthTotal.toFixed(2)}</div>
+    <div class="income-hero-sub">${thisMonth.length} deposit${thisMonth.length!==1?'s':''} this month</div>
+  </div>
+</div>`;
+  if(!incomeTxns.length){
+    container.innerHTML=hero+'<div class="empty-state" style="padding:40px 24px"><div class="empty-icon">💸</div><div class="empty-text">No income transactions yet</div></div>';
+    return;
+  }
+  const groups={};
+  incomeTxns.forEach(t=>{const mo=t.date?.slice(0,7)||'';(groups[mo]=groups[mo]||[]).push(t);});
+  const groupsHtml=Object.keys(groups).sort((a,b)=>b.localeCompare(a)).map(mo=>{
+    const moTotal=groups[mo].reduce((s,t)=>s+Math.abs(t.amount),0);
+    const[y,m]=mo.split('-');
+    const moLabel=new Date(+y,+m-1,1).toLocaleString('default',{month:'long',year:'numeric'});
+    return `
+<div class="date-group">
+  <div class="date-header income-month-head"><span>${moLabel}</span><span class="income-month-total">+$${moTotal.toFixed(2)}</span></div>
+  ${groups[mo].map(incomeRow).join('')}
+</div>`;
+  }).join('');
+  container.innerHTML=hero+groupsHtml;
+}
+
+function incomeRow(t){
+  const merchant=t.merchant_name||t.name||'Deposit';
+  const acctLbl=accountLabel(t);
+  return `
+<div class="txn-row no-click">
+  <div class="txn-left">
+    <div class="txn-bucket-icon" style="background:rgba(34,197,94,.12);color:var(--green)">💰</div>
+    <div class="txn-info">
+      <div class="txn-merchant">${esc(merchant)}</div>
+      <div class="txn-meta">
+        <span class="cat-badge" style="background:rgba(34,197,94,.12);color:var(--green)">Income</span>
+        ${acctLbl?`<span class="account-badge">${esc(acctLbl)}</span>`:''}
+        ${t.pending?'<span style="font-size:9px;color:var(--muted)">pending</span>':''}
+      </div>
+    </div>
+  </div>
+  <div class="txn-right"><div class="txn-amount credit">+$${Math.abs(t.amount).toFixed(2)}</div></div>
+</div>`;
+}
+
+/* Buckets settings */
 function renderBucketsTab(){
   const list=qs('#bucket-settings-list');if(!list)return;
   list.innerHTML=buckets.map(b=>`
@@ -732,27 +874,21 @@ function renderBucketsTab(){
   </div>
   <input type="color" class="color-swatch" value="${b.color}" title="Change color"
     oninput="updateBucket('${b.id}','color',this.value)">
-  <button class="delete-btn" onclick="deleteBucket('${b.id}')" title="Remove bucket">×</button>
+  <button class="delete-btn" onclick="deleteBucket('${b.id}')" title="Remove">×</button>
 </div>`).join('');
 }
-
 function updateBucket(id,field,value){
   const b=getBucket(id);if(!b)return;
   b[field]=value;saveBuckets();render();
   if(qs('#tab-buckets').style.display!=='none')renderBucketsTab();
 }
-
 function addBucket(){
   const palette=['#f97316','#3b82f6','#8b5cf6','#06b6d4','#10b981','#ec4899','#ef4444','#eab308'];
   const id='custom_'+Date.now();
   buckets.push({id,name:'New Bucket',icon:'📦',color:palette[buckets.length%palette.length],budget:100});
   saveBuckets();renderBucketsTab();render();
-  setTimeout(()=>{
-    const inputs=qs('#bucket-settings-list')?.querySelectorAll('.name-input');
-    inputs?.[inputs.length-1]?.focus();
-  },40);
+  setTimeout(()=>{const inputs=qs('#bucket-settings-list')?.querySelectorAll('.name-input');inputs?.[inputs.length-1]?.focus();},40);
 }
-
 function deleteBucket(id){
   if(buckets.length<=1){alert('You must keep at least one bucket.');return;}
   const b=getBucket(id);
@@ -763,7 +899,7 @@ function deleteBucket(id){
   saveOverrides();saveBuckets();renderBucketsTab();render();
 }
 
-/* OVERVIEW inline budget edit */
+/* Budget inline edit */
 function editBudget(bid){
   const b=getBucket(bid),el=qs(`#bdg-${bid}`);
   if(!b||!el)return;
@@ -779,9 +915,10 @@ function commitBudget(bid){
   render();
 }
 
-/* MODAL */
+/* Category modal */
 function openModal(txnId){
-  const t=transactions.find(t=>t.transaction_id===txnId);if(!t)return;
+  const t=transactions.find(t=>t.transaction_id===txnId);
+  if(!t||isIncome(t))return;
   activeTxnId=txnId;pendingBid=getBucketId(t)||buckets[0]?.id;
   qs('#modal-merchant').textContent=t.merchant_name||t.name||'Unknown';
   qs('#modal-sub').textContent=`-$${t.amount.toFixed(2)} · ${fmtDate(t.date)}`;
@@ -797,21 +934,21 @@ function applyOverride(){if(activeTxnId&&pendingBid){overrides[activeTxnId]=pend
 function closeModal(){qs('#cat-modal').classList.remove('open');activeTxnId=null;pendingBid=null;}
 function onOverlayClick(e){if(e.target===qs('#cat-modal'))closeModal();}
 
-/* DISCONNECT */
+/* Disconnect */
 function handleDisconnect(){
   if(!confirm('Disconnect bank? Token, cursor, and cached transactions will be cleared.'))return;
   clearAuth();render();
 }
 function clearAuth(){
-  ['plaid_access_token','plaid_cursor','cached_txns','last_synced'].forEach(k=>localStorage.removeItem(k));
-  accessToken=null;cursor=null;transactions=[];lastSynced=null;isDemoMode=false;
+  ['plaid_access_token','plaid_cursor','cached_txns','last_synced','cached_accounts'].forEach(k=>localStorage.removeItem(k));
+  accessToken=null;cursor=null;transactions=[];accounts=[];lastSynced=null;isDemoMode=false;
 }
 
-/* LOADING */
+/* Loading */
 function showLoad(txt='Loading…'){qs('#load-text').textContent=txt;qs('#load-overlay').classList.add('on');}
 function hideLoad(){qs('#load-overlay').classList.remove('on');}
 
-/* HELPERS */
+/* Helpers */
 const qs=sel=>document.querySelector(sel);
 function show(sel,visible){const el=qs(sel);if(el)el.style.display=visible?'':'none';}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -819,7 +956,7 @@ function fmtDate(str){
   const[y,m,d]=str.split('-').map(Number),date=new Date(y,m-1,d),today=new Date();
   const yest=new Date(today);yest.setDate(yest.getDate()-1);
   if(date.toDateString()===today.toDateString())return'Today';
-  if(date.toDateString()===yest.toDateString()) return'Yesterday';
+  if(date.toDateString()===yest.toDateString())return'Yesterday';
   return date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
 }
 function fmtTime(d){
