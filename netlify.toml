@@ -5,12 +5,15 @@
 [functions]
   node_bundler = "esbuild"
 
-# /api/* on the frontend works locally (Express) and on Netlify (redirected here)
+# API calls: /api/foo -> /.netlify/functions/foo
+# Must be listed BEFORE the SPA fallback so it wins.
 [[redirects]]
   from   = "/api/:splat"
   to     = "/.netlify/functions/:splat"
   status = 200
 
-[dev]
-  port       = 3000
-  targetPort = 3000
+# SPA fallback — serve index.html for all other routes.
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
