@@ -372,7 +372,6 @@ const BUCKET_DEFAULTS = [
 /* ════════════════════════════════════════════════════
    CATEGORY MAPS  (Plaid → bucket id)
 ════════════════════════════════════════════════════ */
-// Legacy category[] array
 const OLD_CAT_MAP = {
   'Food and Drink':            c => c[1] === 'Groceries' ? 'groceries' : 'food',
   'Travel':                    c => c[1] === 'Gas Stations' ? 'transport' : 'travel',
@@ -390,7 +389,6 @@ const OLD_CAT_MAP = {
   'Utilities':                 () => 'utilities',
 };
 
-// New personal_finance_category
 const PFC_MAP = {
   'FOOD_AND_DRINK':            p => p.detailed?.includes('GROCERY') ? 'groceries' : 'food',
   'TRANSPORTATION':            () => 'transport',
@@ -406,8 +404,8 @@ const PFC_MAP = {
   'BANK_FEES':                 () => 'misc',
   'GENERAL_SERVICES':          () => 'misc',
   'GOVERNMENT_AND_NON_PROFIT': () => 'misc',
-  'INCOME':                    () => null,      // skip — credits
-  'TRANSFER_IN':               () => null,      // skip
+  'INCOME':                    () => null,
+  'TRANSFER_IN':               () => null,
   'TRANSFER_OUT':              () => 'misc',
 };
 
@@ -446,10 +444,10 @@ function makeDemoTxns() {
    STATE
 ════════════════════════════════════════════════════ */
 let buckets      = [];
-let transactions = [];   // ALL transactions accumulated across syncs
-let overrides    = {};   // txn_id → bucket_id  (manual category overrides)
+let transactions = [];
+let overrides    = {};
 let accessToken  = null;
-let cursor       = null; // Plaid transactions/sync cursor
+let cursor       = null;
 let lastSynced   = null;
 let isDemoMode   = false;
 let activeTxnId  = null;
@@ -535,26 +533,33 @@ function spendByBucket() {
 function getBucket(id) { return buckets.find(b => b.id === id); }
 
 /* ════════════════════════════════════════════════════
-   API
-   /api/* works locally (Express routes) and on
-   Netlify (redirected to /.netlify/functions/* by
-   the [[redirects]] rule in netlify.toml).
+   API — /api/* is redirected to /.netlify/functions/*
+   by the [[redirects]] rule in netlify.toml.
 ════════════════════════════════════════════════════ */
 async function post(endpoint, body = {}) {
-  const res  = await fetch(`/api/${endpoint}`, {
+  const res = await fetch(`/api/${endpoint}`, {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify(body),
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'API error');
-  return data;
+  if (!res.ok) {
+    const raw = await res.text();
+    let errMsg;
+    try { errMsg = JSON.parse(raw).error; } catch { errMsg = `HTTP ${res.status} — ${raw.slice(0, 300)}`; }
+    console.error(`POST /api/${endpoint} failed (${res.status}):`, errMsg);
+    throw new Error(errMsg || 'API error');
+  }
+  return res.json();
 }
 
 /* ════════════════════════════════════════════════════
    PLAID LINK FLOW
 ════════════════════════════════════════════════════ */
 async function handleConnect() {
+  if (typeof Plaid === 'undefined') {
+    alert('Plaid Link script failed to load.\nCheck your internet connection and disable any ad blockers, then try again.');
+    return;
+  }
   try {
     showLoad('Opening Plaid Link…');
     const { link_token } = await post('create_link_token');
@@ -567,18 +572,26 @@ async function handleConnect() {
         try {
           const { access_token } = await post('exchange_token', { public_token });
           accessToken = access_token;
-          cursor      = null;       // fresh account — start with no cursor
+          cursor      = null;
           isDemoMode  = false;
           localStorage.setItem('plaid_access_token', access_token);
-          localStorage.removeItem('plaid_cursor');   // clear any old cursor
-          localStorage.removeItem('cached_txns');    // clear stale cache
+          localStorage.removeItem('plaid_cursor');
+          localStorage.removeItem('cached_txns');
           transactions = [];
           await sync();
-        } catch (e) { hideLoad(); alert('Token exchange failed: ' + e.message); }
+        } catch (e) {
+          console.error('exchange_token error:', e);
+          hideLoad();
+          alert('Token exchange failed: ' + e.message);
+        }
       },
-      onExit: (err) => { hideLoad(); if (err) console.warn('Plaid exit:', err); },
+      onExit: (err, metadata) => {
+        hideLoad();
+        if (err) console.warn('Plaid Link exit with error:', err, metadata);
+      },
     }).open();
   } catch (err) {
+    console.error('handleConnect error:', err);
     hideLoad();
     alert('Could not open Plaid Link.\n\n' + err.message);
   }
@@ -591,8 +604,6 @@ async function handleSync() {
 
 /* ════════════════════════════════════════════════════
    SYNC  — cursor-based incremental updates
-   First call (cursor=null): gets all historical transactions.
-   Subsequent calls: gets only new / modified / removed.
 ════════════════════════════════════════════════════ */
 async function sync() {
   showLoad('Syncing transactions…');
@@ -602,21 +613,17 @@ async function sync() {
       cursor:       cursor || undefined,
     });
 
-    // Remove deleted transactions
     const removedIds = new Set((removed || []).map(t => t.transaction_id));
     transactions = transactions.filter(t => !removedIds.has(t.transaction_id));
 
-    // Apply modifications in-place (or append if not already present)
     (modified || []).forEach(upd => {
       const i = transactions.findIndex(t => t.transaction_id === upd.transaction_id);
       if (i >= 0) transactions[i] = upd;
       else transactions.push(upd);
     });
 
-    // Append newly added transactions
     transactions.push(...(added || []));
 
-    // Persist cursor for next incremental sync
     cursor = next_cursor;
     if (cursor) localStorage.setItem('plaid_cursor', cursor);
 
@@ -625,6 +632,7 @@ async function sync() {
     cacheTxns();
     render();
   } catch (err) {
+    console.error('sync error:', err);
     const msg = err.message;
     if (/INVALID_ACCESS_TOKEN|ITEM_LOGIN_REQUIRED/i.test(msg)) {
       clearAuth();
@@ -714,7 +722,6 @@ function renderBuckets(spend) {
 
 function renderTxns() {
   const container = qs('#txn-container');
-  const pfx       = monthPrefix();
 
   const visible = (isDemoMode ? transactions : currentMonthTxns())
     .filter(t => t.amount > 0)
@@ -888,10 +895,10 @@ function fmtTime(d) {
 (function init() {
   loadStorage();
   if (accessToken) {
-    render();                        // show cached data immediately
-    sync().catch(console.error);     // refresh in background
+    render();
+    sync().catch(console.error);
   } else {
-    render();                        // show connect screen
+    render();
   }
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(console.warn);
