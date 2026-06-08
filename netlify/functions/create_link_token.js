@@ -1,28 +1,39 @@
-const PLAID_BASE = `https://${process.env.PLAID_ENV || 'sandbox'}.plaid.com`;
+const { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode } = require('plaid');
 
-exports.handler = async (event) => {
-  if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
-  try {
-    const res = await fetch(`${PLAID_BASE}/link/token/create`, {
-      method: 'POST',
+const plaidClient = new PlaidApi(
+  new Configuration({
+    basePath: PlaidEnvironments[process.env.PLAID_ENV || 'sandbox'],
+    baseOptions: {
       headers: {
-        'Content-Type':    'application/json',
         'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
         'PLAID-SECRET':    process.env.PLAID_SECRET,
       },
-      body: JSON.stringify({
-        user:          { client_user_id: 'budget-app-user-001' },
-        client_name:   'Budget Tracker',
-        products:      ['transactions'],
-        country_codes: ['US'],
-        language:      'en',
-      }),
+    },
+  })
+);
+
+exports.handler = async (event) => {
+  if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
+
+  try {
+    const response = await plaidClient.linkTokenCreate({
+      user:          { client_user_id: 'budget-app-user-001' },
+      client_name:   'Budget Tracker',
+      products:      [Products.Transactions],
+      country_codes: [CountryCode.Us],
+      language:      'en',
     });
-    const data = await res.json();
-    if (!res.ok) throw data;
-    return { statusCode: 200, body: JSON.stringify({ link_token: data.link_token }) };
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ link_token: response.data.link_token }),
+    };
   } catch (err) {
-    console.error('create_link_token:', err.error_code || err);
-    return { statusCode: 500, body: JSON.stringify({ error: err.error_code || 'PLAID_ERROR' }) };
+    const plaidErr = err.response?.data;
+    console.error('create_link_token:', plaidErr?.error_code || err.message);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: plaidErr?.error_code || 'PLAID_ERROR' }),
+    };
   }
 };

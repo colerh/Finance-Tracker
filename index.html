@@ -37,19 +37,17 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font);
-      font-size: 13px;
-      line-height: 1.6;
-      min-height: 100vh;
+      background: var(--bg); color: var(--text);
+      font-family: var(--font); font-size: 13px;
+      line-height: 1.6; min-height: 100vh;
     }
     button { cursor: pointer; }
     input:focus { outline: none; }
+
+    /* ── Header ── */
     .app-header {
       position: sticky; top: 0; z-index: 200;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
+      background: var(--surface); border-bottom: 1px solid var(--border);
       padding: 14px 28px;
       display: flex; align-items: center; justify-content: space-between;
       gap: 16px; flex-wrap: wrap;
@@ -67,7 +65,9 @@
     .total-label  { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
     .total-amount { font-size: 22px; font-weight: 700; line-height: 1.2; transition: color 0.3s; }
     .total-sub    { font-size: 10px; color: var(--muted); }
-    .sync-info { font-size: 10px; color: var(--muted); text-align: right; white-space: nowrap; }
+    .sync-info    { font-size: 10px; color: var(--muted); text-align: right; white-space: nowrap; }
+
+    /* ── Buttons ── */
     .btn {
       display: inline-flex; align-items: center; gap: 5px;
       padding: 8px 16px; border: none; border-radius: var(--radius-sm);
@@ -84,6 +84,8 @@
     .btn-ghost { background: transparent; color: var(--muted); border: 1px solid transparent; font-size: 11px; }
     .btn-ghost:hover { color: var(--red); border-color: rgba(239,68,68,0.3); opacity: 1; }
     .btn-sm { padding: 5px 12px; font-size: 11px; }
+
+    /* ── Connect screen ── */
     #connect-screen {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       min-height: calc(100vh - 68px); padding: 32px 24px; gap: 24px;
@@ -108,9 +110,12 @@
       padding: 12px 16px; font-size: 11px; color: var(--accent);
       text-align: left; line-height: 1.8;
     }
+
+    /* ── Main content ── */
     .main-wrap { max-width: 1180px; margin: 0 auto; padding: 28px 24px 64px; }
     .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-    .section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
+    .section-title  { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
+
     .demo-banner {
       display: flex; align-items: center; justify-content: space-between;
       gap: 16px; flex-wrap: wrap;
@@ -119,6 +124,8 @@
       padding: 12px 18px; margin-bottom: 28px;
       font-size: 11px; color: var(--accent); font-weight: 700;
     }
+
+    /* ── Bucket cards ── */
     .buckets-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 16px; margin-bottom: 48px;
@@ -146,18 +153,20 @@
       padding: 3px 7px; border-radius: 5px; width: 80px; text-align: right;
     }
     .prog-track { height: 7px; background: rgba(255,255,255,0.07); border-radius: 10px; overflow: hidden; margin: 12px 0 14px; }
-    .prog-fill { height: 100%; border-radius: 10px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1), background 0.3s; }
+    .prog-fill  { height: 100%; border-radius: 10px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1), background 0.3s; }
     .prog-fill.g { background: var(--green); }
     .prog-fill.y { background: var(--yellow); }
     .prog-fill.r { background: var(--red); box-shadow: 0 0 10px rgba(239,68,68,0.4); }
     .bucket-foot { display: flex; justify-content: space-between; align-items: flex-end; }
-    .spent-label  { font-size: 10px; color: var(--muted); margin-bottom: 2px; }
-    .spent-amount { font-size: 18px; font-weight: 700; line-height: 1; }
+    .spent-label   { font-size: 10px; color: var(--muted); margin-bottom: 2px; }
+    .spent-amount  { font-size: 18px; font-weight: 700; line-height: 1; }
     .remain-label  { font-size: 10px; color: var(--muted); text-align: right; margin-bottom: 2px; }
     .remain-amount { font-size: 13px; font-weight: 700; text-align: right; }
     .remain-amount.over { color: var(--red); }
     .remain-amount.ok   { color: var(--green); }
-    .date-group { margin-bottom: 28px; }
+
+    /* ── Transaction list ── */
+    .date-group  { margin-bottom: 28px; }
     .date-header {
       font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
       color: var(--muted); padding-bottom: 8px;
@@ -169,27 +178,30 @@
       border-radius: var(--radius-sm); cursor: pointer; transition: background 0.15s;
     }
     .txn-row:hover { background: var(--card); }
-    .txn-left    { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .txn-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
     .txn-bucket-icon {
       width: 36px; height: 36px; border-radius: 9px;
       display: flex; align-items: center; justify-content: center;
       font-size: 16px; flex-shrink: 0;
     }
-    .txn-info    { min-width: 0; }
+    .txn-info { min-width: 0; }
     .txn-merchant { font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .txn-meta { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
     .cat-badge {
       display: inline-flex; align-items: center; gap: 4px;
-      padding: 2px 9px; border-radius: 20px; font-size: 10px; font-weight: 700; white-space: nowrap;
+      padding: 2px 9px; border-radius: 20px;
+      font-size: 10px; font-weight: 700; white-space: nowrap;
     }
     .overridden-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: 0.7; flex-shrink: 0; }
-    .txn-right   { text-align: right; flex-shrink: 0; }
-    .txn-amount  { font-size: 14px; font-weight: 700; }
+    .txn-right  { text-align: right; flex-shrink: 0; }
+    .txn-amount { font-size: 14px; font-weight: 700; }
     .txn-amount.debit  { color: var(--red); }
     .txn-amount.credit { color: var(--green); }
     .empty-state { text-align: center; padding: 72px 24px; color: var(--muted); }
-    .empty-icon { font-size: 44px; margin-bottom: 14px; }
-    .empty-text { font-size: 12px; }
+    .empty-icon  { font-size: 44px; margin-bottom: 14px; }
+    .empty-text  { font-size: 12px; }
+
+    /* ── Modal ── */
     .overlay {
       display: none; position: fixed; inset: 0;
       background: rgba(0,0,0,0.72); backdrop-filter: blur(6px);
@@ -203,7 +215,7 @@
       animation: slideUp 0.2s ease;
     }
     @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-    .modal-title    { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+    .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
     .modal-txn-info {
       background: var(--bg); border: 1px solid var(--border);
       border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 20px;
@@ -215,11 +227,14 @@
       display: flex; align-items: center; gap: 8px;
       padding: 10px 14px; background: var(--surface);
       border: 1px solid var(--border); border-radius: var(--radius-sm);
-      color: var(--text); font-family: var(--font); font-size: 12px; transition: all 0.15s;
+      color: var(--text); font-family: var(--font); font-size: 12px;
+      transition: all 0.15s;
     }
     .picker-opt:hover  { border-color: var(--accent); color: var(--accent); }
     .picker-opt.active { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
     .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+
+    /* ── Loading overlay ── */
     .load-overlay {
       display: none; position: fixed; inset: 0;
       background: rgba(0,0,0,0.55); z-index: 400;
@@ -229,7 +244,8 @@
     .load-card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 22px 32px;
-      display: flex; align-items: center; gap: 16px; font-size: 13px; box-shadow: var(--shadow);
+      display: flex; align-items: center; gap: 16px;
+      font-size: 13px; box-shadow: var(--shadow);
     }
     .spinner {
       width: 16px; height: 16px;
@@ -237,6 +253,8 @@
       border-radius: 50%; animation: spin 0.65s linear infinite; flex-shrink: 0;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Responsive ── */
     @media (max-width: 680px) {
       .app-header    { padding: 12px 16px; }
       .header-center { display: none; }
@@ -258,11 +276,11 @@
   <div class="header-center">
     <div class="total-label">Total Spent</div>
     <div class="total-amount" id="total-amount">$0.00</div>
-    <div class="total-sub" id="total-sub">of $0.00 budgeted</div>
+    <div class="total-sub"   id="total-sub">of $0.00 budgeted</div>
   </div>
   <div class="header-right">
     <div class="sync-info" id="sync-info"></div>
-    <button class="btn btn-outline btn-sm" id="sync-btn" onclick="handleSync()" style="display:none">↻ Sync</button>
+    <button class="btn btn-outline btn-sm" id="sync-btn"    onclick="handleSync()"       style="display:none">↻ Sync</button>
     <button class="btn btn-primary btn-sm" id="connect-btn" onclick="handleConnect()">+ Connect Bank</button>
   </div>
 </header>
@@ -286,7 +304,7 @@
     <div class="sandbox-note">
       <strong>Sandbox test credentials:</strong><br>
       Username: <code>user_good</code> &nbsp;·&nbsp; Password: <code>pass_good</code><br>
-      Pick any institution in the Link UI.
+      Pick any institution in the Plaid Link UI.
     </div>
   </div>
 </div>
@@ -296,23 +314,26 @@
     <span>📊 Demo Mode — sample data only</span>
     <button class="btn btn-primary btn-sm" onclick="handleConnect()">Connect Real Bank</button>
   </div>
+
   <div class="section-header">
     <div class="section-title">Budget Buckets</div>
     <button class="btn btn-ghost btn-sm" id="disconnect-btn" onclick="handleDisconnect()" style="display:none">disconnect</button>
   </div>
   <div class="buckets-grid" id="buckets-grid"></div>
+
   <div class="section-header">
     <div class="section-title">Transactions — <span id="txn-month">—</span></div>
   </div>
   <div id="txn-container"></div>
 </div>
 
+<!-- Category reassignment modal -->
 <div class="overlay" id="cat-modal" onclick="onOverlayClick(event)">
   <div class="modal">
     <div class="modal-title">Reassign Category</div>
     <div class="modal-txn-info">
       <div class="modal-merchant" id="modal-merchant">—</div>
-      <div class="modal-sub" id="modal-sub">—</div>
+      <div class="modal-sub"      id="modal-sub">—</div>
     </div>
     <div class="picker-grid" id="picker-grid"></div>
     <div class="modal-footer">
@@ -322,6 +343,7 @@
   </div>
 </div>
 
+<!-- Loading overlay -->
 <div class="load-overlay" id="load-overlay">
   <div class="load-card">
     <div class="spinner"></div>
@@ -331,6 +353,9 @@
 
 <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 <script>
+/* ════════════════════════════════════════════════════
+   BUCKET DEFAULTS
+════════════════════════════════════════════════════ */
 const BUCKET_DEFAULTS = [
   { id:'food',          name:'Food & Dining',    icon:'🍔', color:'#f97316', budget:500  },
   { id:'transport',     name:'Gas & Transport',  icon:'⛽', color:'#3b82f6', budget:200  },
@@ -344,49 +369,54 @@ const BUCKET_DEFAULTS = [
   { id:'misc',          name:'Misc',              icon:'📦', color:'#64748b', budget:200  },
 ];
 
+/* ════════════════════════════════════════════════════
+   CATEGORY MAPS  (Plaid → bucket id)
+════════════════════════════════════════════════════ */
+// Legacy category[] array
 const OLD_CAT_MAP = {
-  'Food and Drink':            cats => cats[1] === 'Groceries' ? 'groceries' : 'food',
-  'Travel':                    cats => cats[1] === 'Gas Stations' ? 'transport' : 'travel',
-  'Shops':                     ()   => 'shopping',
-  'Recreation':                ()   => 'entertainment',
-  'Healthcare':                ()   => 'health',
-  'Service':                   ()   => 'misc',
-  'Community':                 ()   => 'misc',
-  'Government and Non-Profit': ()   => 'misc',
-  'Payment':                   ()   => 'misc',
-  'Transfer':                  ()   => 'misc',
-  'Bank Fees':                 ()   => 'misc',
-  'Interest':                  ()   => 'misc',
-  'Tax':                       ()   => 'misc',
-  'Utilities':                 ()   => 'utilities',
-  'Shops/Supermarkets and Groceries': () => 'groceries',
+  'Food and Drink':            c => c[1] === 'Groceries' ? 'groceries' : 'food',
+  'Travel':                    c => c[1] === 'Gas Stations' ? 'transport' : 'travel',
+  'Shops':                     () => 'shopping',
+  'Recreation':                () => 'entertainment',
+  'Healthcare':                () => 'health',
+  'Service':                   () => 'misc',
+  'Community':                 () => 'misc',
+  'Government and Non-Profit': () => 'misc',
+  'Payment':                   () => 'misc',
+  'Transfer':                  () => 'misc',
+  'Bank Fees':                 () => 'misc',
+  'Interest':                  () => 'misc',
+  'Tax':                       () => 'misc',
+  'Utilities':                 () => 'utilities',
 };
 
+// New personal_finance_category
 const PFC_MAP = {
   'FOOD_AND_DRINK':            p => p.detailed?.includes('GROCERY') ? 'groceries' : 'food',
-  'TRANSPORTATION':            ()=> 'transport',
-  'TRAVEL':                    ()=> 'travel',
-  'ENTERTAINMENT':             ()=> 'entertainment',
-  'GENERAL_MERCHANDISE':       ()=> 'shopping',
-  'HOME_IMPROVEMENT':          ()=> 'housing',
+  'TRANSPORTATION':            () => 'transport',
+  'TRAVEL':                    () => 'travel',
+  'ENTERTAINMENT':             () => 'entertainment',
+  'GENERAL_MERCHANDISE':       () => 'shopping',
+  'HOME_IMPROVEMENT':          () => 'housing',
   'RENT_AND_UTILITIES':        p => (p.detailed||'').includes('RENT') ? 'housing' : 'utilities',
-  'MEDICAL':                   ()=> 'health',
-  'PERSONAL_CARE':             ()=> 'health',
-  'UTILITIES':                 ()=> 'utilities',
-  'LOAN_PAYMENTS':             ()=> 'misc',
-  'BANK_FEES':                 ()=> 'misc',
-  'GENERAL_SERVICES':          ()=> 'misc',
-  'GOVERNMENT_AND_NON_PROFIT': ()=> 'misc',
-  'INCOME':                    ()=> null,
-  'TRANSFER_IN':               ()=> null,
-  'TRANSFER_OUT':              ()=> 'misc',
+  'MEDICAL':                   () => 'health',
+  'PERSONAL_CARE':             () => 'health',
+  'UTILITIES':                 () => 'utilities',
+  'LOAN_PAYMENTS':             () => 'misc',
+  'BANK_FEES':                 () => 'misc',
+  'GENERAL_SERVICES':          () => 'misc',
+  'GOVERNMENT_AND_NON_PROFIT': () => 'misc',
+  'INCOME':                    () => null,      // skip — credits
+  'TRANSFER_IN':               () => null,      // skip
+  'TRANSFER_OUT':              () => 'misc',
 };
 
+/* ════════════════════════════════════════════════════
+   DEMO DATA
+════════════════════════════════════════════════════ */
 function makeDemoTxns() {
   const now = new Date();
-  const y = now.getFullYear();
-  const mo = String(now.getMonth()+1).padStart(2,'0');
-  const today = now.getDate();
+  const y = now.getFullYear(), mo = String(now.getMonth()+1).padStart(2,'0'), today = now.getDate();
   const d = n => `${y}-${mo}-${String(Math.min(n,today)).padStart(2,'0')}`;
   return [
     { transaction_id:'d01', merchant_name:'Rent Payment',          amount:1500.00, date:d(1),  pending:false, category:['Payment'] },
@@ -412,17 +442,40 @@ function makeDemoTxns() {
   ].filter(t => t.date <= d(today));
 }
 
-let buckets=[], transactions=[], overrides={}, accessToken=null, lastSynced=null, isDemoMode=false, activeTxnId=null, pendingBid=null;
+/* ════════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════════ */
+let buckets      = [];
+let transactions = [];   // ALL transactions accumulated across syncs
+let overrides    = {};   // txn_id → bucket_id  (manual category overrides)
+let accessToken  = null;
+let cursor       = null; // Plaid transactions/sync cursor
+let lastSynced   = null;
+let isDemoMode   = false;
+let activeTxnId  = null;
+let pendingBid   = null;
 
+/* ════════════════════════════════════════════════════
+   LOCAL STORAGE
+════════════════════════════════════════════════════ */
 function loadStorage() {
   accessToken = localStorage.getItem('plaid_access_token');
-  const rawB = localStorage.getItem('bucket_settings');
+  cursor      = localStorage.getItem('plaid_cursor') || null;
+
+  const rawB  = localStorage.getItem('bucket_settings');
   const saved = rawB ? JSON.parse(rawB) : {};
-  buckets = BUCKET_DEFAULTS.map(b => ({ ...b, budget: saved[b.id]?.budget ?? b.budget, name: saved[b.id]?.name ?? b.name }));
+  buckets = BUCKET_DEFAULTS.map(b => ({
+    ...b,
+    budget: saved[b.id]?.budget ?? b.budget,
+    name:   saved[b.id]?.name   ?? b.name,
+  }));
+
   const rawO = localStorage.getItem('cat_overrides');
-  overrides = rawO ? JSON.parse(rawO) : {};
+  overrides  = rawO ? JSON.parse(rawO) : {};
+
   const rawS = localStorage.getItem('last_synced');
   lastSynced = rawS ? new Date(rawS) : null;
+
   const rawT = localStorage.getItem('cached_txns');
   if (rawT) transactions = JSON.parse(rawT);
 }
@@ -432,22 +485,44 @@ function saveBuckets() {
   buckets.forEach(b => { out[b.id] = { budget: b.budget, name: b.name }; });
   localStorage.setItem('bucket_settings', JSON.stringify(out));
 }
-function saveOverrides() { localStorage.setItem('cat_overrides', JSON.stringify(overrides)); }
-function cacheTxns()     { localStorage.setItem('cached_txns', JSON.stringify(transactions)); }
 
+function saveOverrides() { localStorage.setItem('cat_overrides', JSON.stringify(overrides)); }
+function cacheTxns()     { localStorage.setItem('cached_txns',   JSON.stringify(transactions)); }
+
+/* ════════════════════════════════════════════════════
+   CATEGORY MAPPING
+════════════════════════════════════════════════════ */
 function getBucketId(txn) {
   if (overrides[txn.transaction_id]) return overrides[txn.transaction_id];
+
   const pfc = txn.personal_finance_category;
-  if (pfc?.primary) { const fn = PFC_MAP[pfc.primary]; if (fn) return fn(pfc); }
+  if (pfc?.primary) {
+    const fn = PFC_MAP[pfc.primary];
+    if (fn) return fn(pfc);
+  }
+
   const cats = txn.category || [];
-  const fn = OLD_CAT_MAP[cats[0]];
+  const fn   = OLD_CAT_MAP[cats[0]];
   return fn ? fn(cats) : 'misc';
+}
+
+/* ════════════════════════════════════════════════════
+   COMPUTED — current month only
+════════════════════════════════════════════════════ */
+function monthPrefix() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+}
+
+function currentMonthTxns() {
+  const pfx = monthPrefix();
+  return transactions.filter(t => t.date?.startsWith(pfx));
 }
 
 function spendByBucket() {
   const out = {};
   buckets.forEach(b => { out[b.id] = 0; });
-  transactions.forEach(t => {
+  currentMonthTxns().forEach(t => {
     if (t.amount <= 0) return;
     const bid = getBucketId(t);
     if (bid === null) return;
@@ -459,22 +534,32 @@ function spendByBucket() {
 
 function getBucket(id) { return buckets.find(b => b.id === id); }
 
-const API_BASE = window.location.hostname === 'localhost' ? '/api' : '/.netlify/functions';
-
-async function post(endpoint, body={}) {
-  const res = await fetch(`${API_BASE}/${endpoint}`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+/* ════════════════════════════════════════════════════
+   API
+   /api/* works locally (Express routes) and on
+   Netlify (redirected to /.netlify/functions/* by
+   the [[redirects]] rule in netlify.toml).
+════════════════════════════════════════════════════ */
+async function post(endpoint, body = {}) {
+  const res  = await fetch(`/api/${endpoint}`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(body),
   });
   const data = await res.json();
-  if (!res.ok) { const msg = data.error?.error_message || data.error || 'API error'; throw new Error(msg); }
+  if (!res.ok) throw new Error(data.error || 'API error');
   return data;
 }
 
+/* ════════════════════════════════════════════════════
+   PLAID LINK FLOW
+════════════════════════════════════════════════════ */
 async function handleConnect() {
   try {
     showLoad('Opening Plaid Link…');
     const { link_token } = await post('create_link_token');
     hideLoad();
+
     Plaid.create({
       token: link_token,
       onSuccess: async (public_token) => {
@@ -482,8 +567,12 @@ async function handleConnect() {
         try {
           const { access_token } = await post('exchange_token', { public_token });
           accessToken = access_token;
+          cursor      = null;       // fresh account — start with no cursor
           isDemoMode  = false;
           localStorage.setItem('plaid_access_token', access_token);
+          localStorage.removeItem('plaid_cursor');   // clear any old cursor
+          localStorage.removeItem('cached_txns');    // clear stale cache
+          transactions = [];
           await sync();
         } catch (e) { hideLoad(); alert('Token exchange failed: ' + e.message); }
       },
@@ -491,73 +580,133 @@ async function handleConnect() {
     }).open();
   } catch (err) {
     hideLoad();
-    alert('Could not start Plaid Link.\n\n' + err.message);
+    alert('Could not open Plaid Link.\n\n' + err.message);
   }
 }
 
-async function handleSync() { if (!accessToken || isDemoMode) return; await sync(); }
+async function handleSync() {
+  if (!accessToken || isDemoMode) return;
+  await sync();
+}
 
+/* ════════════════════════════════════════════════════
+   SYNC  — cursor-based incremental updates
+   First call (cursor=null): gets all historical transactions.
+   Subsequent calls: gets only new / modified / removed.
+════════════════════════════════════════════════════ */
 async function sync() {
   showLoad('Syncing transactions…');
   try {
-    const { transactions: txns } = await post('transactions', { access_token: accessToken });
-    transactions = txns;
-    lastSynced   = new Date();
+    const { added, modified, removed, next_cursor } = await post('transactions', {
+      access_token: accessToken,
+      cursor:       cursor || undefined,
+    });
+
+    // Remove deleted transactions
+    const removedIds = new Set((removed || []).map(t => t.transaction_id));
+    transactions = transactions.filter(t => !removedIds.has(t.transaction_id));
+
+    // Apply modifications in-place (or append if not already present)
+    (modified || []).forEach(upd => {
+      const i = transactions.findIndex(t => t.transaction_id === upd.transaction_id);
+      if (i >= 0) transactions[i] = upd;
+      else transactions.push(upd);
+    });
+
+    // Append newly added transactions
+    transactions.push(...(added || []));
+
+    // Persist cursor for next incremental sync
+    cursor = next_cursor;
+    if (cursor) localStorage.setItem('plaid_cursor', cursor);
+
+    lastSynced = new Date();
     localStorage.setItem('last_synced', lastSynced.toISOString());
     cacheTxns();
     render();
   } catch (err) {
     const msg = err.message;
     if (/INVALID_ACCESS_TOKEN|ITEM_LOGIN_REQUIRED/i.test(msg)) {
-      localStorage.removeItem('plaid_access_token');
-      localStorage.removeItem('cached_txns');
-      accessToken = null; transactions = [];
-      render(); alert('Bank session expired — please reconnect.');
-    } else { alert('Sync failed: ' + msg); }
-  } finally { hideLoad(); }
+      clearAuth();
+      render();
+      alert('Bank session expired — please reconnect.');
+    } else {
+      alert('Sync failed: ' + msg);
+    }
+  } finally {
+    hideLoad();
+  }
 }
 
-function loadDemo() { isDemoMode = true; transactions = makeDemoTxns(); render(); }
+function loadDemo() {
+  isDemoMode   = true;
+  transactions = makeDemoTxns();
+  render();
+}
 
+/* ════════════════════════════════════════════════════
+   RENDER
+════════════════════════════════════════════════════ */
 function render() {
   const now    = new Date();
   const spend  = spendByBucket();
-  const total  = Object.values(spend).reduce((a,b)=>a+b,0);
-  const budget = buckets.reduce((a,b)=>a+b.budget,0);
-  qs('#month-pill').textContent = now.toLocaleString('default',{month:'short',year:'numeric'});
-  qs('#txn-month').textContent  = now.toLocaleString('default',{month:'long',year:'numeric'});
-  const pct = budget > 0 ? total/budget : 0;
-  qs('#total-amount').textContent = '$' + total.toFixed(2);
-  qs('#total-amount').style.color = pct>=1 ? 'var(--red)' : pct>=0.8 ? 'var(--yellow)' : 'var(--text)';
-  qs('#total-sub').textContent = `of $${budget.toFixed(2)} budgeted`;
-  qs('#sync-info').textContent = isDemoMode ? '📊 Demo mode' : lastSynced ? 'Synced ' + fmtTime(lastSynced) : 'Never synced';
-  const linked = accessToken && !isDemoMode;
-  show('#sync-btn', linked); show('#disconnect-btn', linked); show('#connect-btn', !linked);
-  show('#demo-banner', isDemoMode);
-  const hasData = transactions.length>0 || isDemoMode || accessToken;
-  qs('#connect-screen').style.display = hasData ? 'none' : 'flex';
+  const total  = Object.values(spend).reduce((a,b) => a+b, 0);
+  const budget = buckets.reduce((a,b) => a+b.budget, 0);
+
+  qs('#month-pill').textContent = now.toLocaleString('default', { month:'short', year:'numeric' });
+  qs('#txn-month').textContent  = now.toLocaleString('default', { month:'long',  year:'numeric' });
+
+  const pct = budget > 0 ? total / budget : 0;
+  qs('#total-amount').textContent  = '$' + total.toFixed(2);
+  qs('#total-amount').style.color  = pct >= 1 ? 'var(--red)' : pct >= 0.8 ? 'var(--yellow)' : 'var(--text)';
+  qs('#total-sub').textContent     = `of $${budget.toFixed(2)} budgeted`;
+  qs('#sync-info').textContent     = isDemoMode ? '📊 Demo mode'
+    : lastSynced ? 'Synced ' + fmtTime(lastSynced) : 'Never synced';
+
+  const linked = !!(accessToken && !isDemoMode);
+  show('#sync-btn',       linked);
+  show('#disconnect-btn', linked);
+  show('#connect-btn',   !linked);
+  show('#demo-banner',    isDemoMode);
+
+  const hasData = transactions.length > 0 || isDemoMode || accessToken;
+  qs('#connect-screen').style.display = hasData ? 'none'  : 'flex';
   qs('#app-main').style.display       = hasData ? 'block' : 'none';
-  renderBuckets(spend); renderTxns();
+
+  renderBuckets(spend);
+  renderTxns();
 }
 
 function renderBuckets(spend) {
   qs('#buckets-grid').innerHTML = buckets.map(b => {
     const s   = spend[b.id] || 0;
-    const pct = b.budget > 0 ? Math.min((s/b.budget)*100, 100) : 0;
+    const pct = b.budget > 0 ? Math.min((s / b.budget) * 100, 100) : 0;
     const bar = pct < 60 ? 'g' : pct < 85 ? 'y' : 'r';
     const rem = b.budget - s;
-    return `<div class="bucket-card">
+    return `
+<div class="bucket-card">
   <div class="bucket-head">
-    <div class="bucket-name-row"><span class="bucket-icon">${b.icon}</span><span class="bucket-name">${esc(b.name)}</span></div>
+    <div class="bucket-name-row">
+      <span class="bucket-icon">${b.icon}</span>
+      <span class="bucket-name">${esc(b.name)}</span>
+    </div>
     <div class="budget-right">
       <div class="budget-label">Budget</div>
-      <div class="budget-display" id="bdg-${b.id}" onclick="editBudget('${b.id}')" title="Click to edit">$${b.budget.toFixed(0)}</div>
+      <div class="budget-display" id="bdg-${b.id}" onclick="editBudget('${b.id}')" title="Click to edit">
+        $${b.budget.toFixed(0)}
+      </div>
     </div>
   </div>
   <div class="prog-track"><div class="prog-fill ${bar}" style="width:${pct}%"></div></div>
   <div class="bucket-foot">
-    <div><div class="spent-label">Spent</div><div class="spent-amount" style="color:${b.color}">$${s.toFixed(2)}</div></div>
-    <div><div class="remain-label">Remaining</div><div class="remain-amount ${rem<0?'over':'ok'}">${rem<0?'-':''}$${Math.abs(rem).toFixed(2)}</div></div>
+    <div>
+      <div class="spent-label">Spent</div>
+      <div class="spent-amount" style="color:${b.color}">$${s.toFixed(2)}</div>
+    </div>
+    <div>
+      <div class="remain-label">Remaining</div>
+      <div class="remain-amount ${rem < 0 ? 'over' : 'ok'}">${rem < 0 ? '-' : ''}$${Math.abs(rem).toFixed(2)}</div>
+    </div>
   </div>
 </div>`;
   }).join('');
@@ -565,103 +714,188 @@ function renderBuckets(spend) {
 
 function renderTxns() {
   const container = qs('#txn-container');
-  const visible = transactions.filter(t=>t.amount>0).filter(t=>getBucketId(t)!==null).sort((a,b)=>b.date.localeCompare(a.date));
-  if (!visible.length) { container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No transactions this month yet</div></div>'; return; }
+  const pfx       = monthPrefix();
+
+  const visible = (isDemoMode ? transactions : currentMonthTxns())
+    .filter(t => t.amount > 0)
+    .filter(t => getBucketId(t) !== null)
+    .sort((a,b) => b.date.localeCompare(a.date));
+
+  if (!visible.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No transactions this month yet</div></div>';
+    return;
+  }
+
   const groups = {};
-  visible.forEach(t => { (groups[t.date]=groups[t.date]||[]).push(t); });
-  container.innerHTML = Object.keys(groups).sort((a,b)=>b.localeCompare(a)).map(date =>
-    `<div class="date-group"><div class="date-header">${fmtDate(date)}</div>${groups[date].map(txnRow).join('')}</div>`
-  ).join('');
+  visible.forEach(t => { (groups[t.date] = groups[t.date] || []).push(t); });
+
+  container.innerHTML = Object.keys(groups)
+    .sort((a,b) => b.localeCompare(a))
+    .map(date => `
+<div class="date-group">
+  <div class="date-header">${fmtDate(date)}</div>
+  ${groups[date].map(txnRow).join('')}
+</div>`)
+    .join('');
 }
 
 function txnRow(t) {
-  const bid=getBucketId(t)||'misc', b=getBucket(bid), color=b?.color||'#64748b';
-  const merchant=t.merchant_name||t.name||'Unknown', manual=!!overrides[t.transaction_id];
-  return `<div class="txn-row" onclick="openModal('${t.transaction_id}')">
+  const bid      = getBucketId(t) || 'misc';
+  const b        = getBucket(bid);
+  const color    = b?.color || '#64748b';
+  const merchant = t.merchant_name || t.name || 'Unknown';
+  const manual   = !!overrides[t.transaction_id];
+  return `
+<div class="txn-row" onclick="openModal('${esc(t.transaction_id)}')">
   <div class="txn-left">
-    <div class="txn-bucket-icon" style="background:${color}1a;color:${color}">${b?.icon||'📦'}</div>
+    <div class="txn-bucket-icon" style="background:${color}1a;color:${color}">${b?.icon || '📦'}</div>
     <div class="txn-info">
       <div class="txn-merchant">${esc(merchant)}</div>
       <div class="txn-meta">
-        <span class="cat-badge" style="background:${color}1a;color:${color}">${manual?'<span class="overridden-dot"></span>':''}${esc(b?.name||'Misc')}</span>
-        ${t.pending?'<span style="font-size:9px;color:var(--muted)">pending</span>':''}
+        <span class="cat-badge" style="background:${color}1a;color:${color}">
+          ${manual ? '<span class="overridden-dot"></span>' : ''}${esc(b?.name || 'Misc')}
+        </span>
+        ${t.pending ? '<span style="font-size:9px;color:var(--muted)">pending</span>' : ''}
       </div>
     </div>
   </div>
-  <div class="txn-right"><div class="txn-amount debit">-$${t.amount.toFixed(2)}</div></div>
+  <div class="txn-right">
+    <div class="txn-amount debit">-$${t.amount.toFixed(2)}</div>
+  </div>
 </div>`;
 }
 
+/* ════════════════════════════════════════════════════
+   INLINE BUDGET EDITING
+════════════════════════════════════════════════════ */
 function editBudget(bid) {
-  const b=getBucket(bid), el=qs(`#bdg-${bid}`);
-  if (!b||!el) return;
-  el.outerHTML = `<input class="budget-input" id="bi-${bid}" type="number" min="0" step="1" value="${b.budget}" onblur="commitBudget('${bid}')" onkeydown="if(event.key==='Enter')this.blur();if(event.key==='Escape'){event.preventDefault();render();}">` ;
-  setTimeout(()=>{ const inp=qs(`#bi-${bid}`); if(inp){inp.focus();inp.select();} },10);
+  const b  = getBucket(bid);
+  const el = qs(`#bdg-${bid}`);
+  if (!b || !el) return;
+  el.outerHTML = `<input class="budget-input" id="bi-${bid}" type="number" min="0" step="1" value="${b.budget}"
+    onblur="commitBudget('${bid}')"
+    onkeydown="if(event.key==='Enter')this.blur();if(event.key==='Escape'){event.preventDefault();render();}">` ;
+  setTimeout(() => { const inp = qs(`#bi-${bid}`); if (inp) { inp.focus(); inp.select(); } }, 10);
 }
 
 function commitBudget(bid) {
-  const inp=qs(`#bi-${bid}`);
+  const inp = qs(`#bi-${bid}`);
   if (!inp) return;
-  const v=parseFloat(inp.value), b=getBucket(bid);
-  if (b&&!isNaN(v)&&v>=0) { b.budget=v; saveBuckets(); }
+  const v = parseFloat(inp.value), b = getBucket(bid);
+  if (b && !isNaN(v) && v >= 0) { b.budget = v; saveBuckets(); }
   render();
 }
 
+/* ════════════════════════════════════════════════════
+   CATEGORY MODAL
+════════════════════════════════════════════════════ */
 function openModal(txnId) {
-  const t=transactions.find(t=>t.transaction_id===txnId); if (!t) return;
-  activeTxnId=txnId; pendingBid=getBucketId(t)||'misc';
-  qs('#modal-merchant').textContent=t.merchant_name||t.name||'Unknown';
-  qs('#modal-sub').textContent=`-$${t.amount.toFixed(2)} · ${fmtDate(t.date)}`;
-  renderPicker(); qs('#cat-modal').classList.add('open');
+  const t = transactions.find(t => t.transaction_id === txnId);
+  if (!t) return;
+  activeTxnId = txnId;
+  pendingBid  = getBucketId(t) || 'misc';
+  qs('#modal-merchant').textContent = t.merchant_name || t.name || 'Unknown';
+  qs('#modal-sub').textContent      = `-$${t.amount.toFixed(2)} · ${fmtDate(t.date)}`;
+  renderPicker();
+  qs('#cat-modal').classList.add('open');
 }
 
 function renderPicker() {
   qs('#picker-grid').innerHTML = buckets.map(b =>
-    `<button class="picker-opt ${pendingBid===b.id?'active':''}" onclick="pickBucket('${b.id}')"><span>${b.icon}</span><span>${esc(b.name)}</span></button>`
+    `<button class="picker-opt ${pendingBid === b.id ? 'active' : ''}" onclick="pickBucket('${b.id}')">
+      <span>${b.icon}</span><span>${esc(b.name)}</span>
+    </button>`
   ).join('');
 }
 
-function pickBucket(bid) { pendingBid=bid; renderPicker(); }
+function pickBucket(bid) { pendingBid = bid; renderPicker(); }
 
 function applyOverride() {
-  if (activeTxnId&&pendingBid) { overrides[activeTxnId]=pendingBid; saveOverrides(); }
-  closeModal(); render();
+  if (activeTxnId && pendingBid) { overrides[activeTxnId] = pendingBid; saveOverrides(); }
+  closeModal();
+  render();
 }
 
-function closeModal() { qs('#cat-modal').classList.remove('open'); activeTxnId=null; pendingBid=null; }
-function onOverlayClick(e) { if (e.target===qs('#cat-modal')) closeModal(); }
+function closeModal() {
+  qs('#cat-modal').classList.remove('open');
+  activeTxnId = null;
+  pendingBid  = null;
+}
 
+function onOverlayClick(e) { if (e.target === qs('#cat-modal')) closeModal(); }
+
+/* ════════════════════════════════════════════════════
+   DISCONNECT
+════════════════════════════════════════════════════ */
 function handleDisconnect() {
-  if (!confirm('Disconnect bank? Your access token and cached transactions will be cleared.')) return;
-  ['plaid_access_token','cached_txns','last_synced'].forEach(k=>localStorage.removeItem(k));
-  accessToken=null; transactions=[]; lastSynced=null; isDemoMode=false; render();
+  if (!confirm('Disconnect bank? Your access token, sync cursor, and cached transactions will be cleared.')) return;
+  clearAuth();
+  render();
 }
 
-function showLoad(txt='Loading…') { qs('#load-text').textContent=txt; qs('#load-overlay').classList.add('on'); }
-function hideLoad() { qs('#load-overlay').classList.remove('on'); }
+function clearAuth() {
+  ['plaid_access_token', 'plaid_cursor', 'cached_txns', 'last_synced']
+    .forEach(k => localStorage.removeItem(k));
+  accessToken  = null;
+  cursor       = null;
+  transactions = [];
+  lastSynced   = null;
+  isDemoMode   = false;
+}
 
+/* ════════════════════════════════════════════════════
+   LOADING
+════════════════════════════════════════════════════ */
+function showLoad(txt = 'Loading…') { qs('#load-text').textContent = txt; qs('#load-overlay').classList.add('on'); }
+function hideLoad()                  { qs('#load-overlay').classList.remove('on'); }
+
+/* ════════════════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════════════════ */
 const qs = sel => document.querySelector(sel);
-function show(sel, visible) { const el=qs(sel); if(el) el.style.display=visible?'':' none'; }
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function fmtDate(str) {
-  const [y,m,d]=str.split('-').map(Number), date=new Date(y,m-1,d), today=new Date();
-  const yest=new Date(today); yest.setDate(yest.getDate()-1);
-  if (date.toDateString()===today.toDateString()) return 'Today';
-  if (date.toDateString()===yest.toDateString())  return 'Yesterday';
-  return date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-}
-function fmtTime(d) {
-  const diff=Date.now()-d;
-  if (diff<60e3)   return 'just now';
-  if (diff<3600e3) return `${Math.floor(diff/60e3)}m ago`;
-  return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+
+function show(sel, visible) {
+  const el = qs(sel);
+  if (el) el.style.display = visible ? '' : 'none';
 }
 
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function fmtDate(str) {
+  const [y,m,d] = str.split('-').map(Number);
+  const date    = new Date(y, m-1, d);
+  const today   = new Date();
+  const yest    = new Date(today); yest.setDate(yest.getDate()-1);
+  if (date.toDateString() === today.toDateString()) return 'Today';
+  if (date.toDateString() === yest.toDateString())  return 'Yesterday';
+  return date.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+}
+
+function fmtTime(d) {
+  const diff = Date.now() - d;
+  if (diff < 60e3)   return 'just now';
+  if (diff < 3600e3) return `${Math.floor(diff/60e3)}m ago`;
+  return d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+}
+
+/* ════════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════════ */
 (function init() {
   loadStorage();
-  if (accessToken) { render(); sync().catch(console.error); }
-  else render();
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(console.warn);
+  if (accessToken) {
+    render();                        // show cached data immediately
+    sync().catch(console.error);     // refresh in background
+  } else {
+    render();                        // show connect screen
+  }
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(console.warn);
+  }
 })();
 </script>
 </body>

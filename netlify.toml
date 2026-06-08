@@ -5,6 +5,12 @@
 [functions]
   node_bundler = "esbuild"
 
+# /api/* on the frontend works locally (Express) and on Netlify (redirected here)
+[[redirects]]
+  from   = "/api/:splat"
+  to     = "/.netlify/functions/:splat"
+  status = 200
+
 [dev]
   port       = 3000
   targetPort = 3000
