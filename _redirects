@@ -1,1 +1,2 @@
-/* /index.html 200
+# Redirect rules are now managed entirely in netlify.toml.
+# Keeping this file empty avoids precedence ambiguity.
