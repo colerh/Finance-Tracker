@@ -372,6 +372,27 @@
       border-radius:var(--radius-sm);font-size:11px;color:var(--muted);line-height:1.8;
     }
 
+    /* Split transaction */
+    .split-mode-toggle{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:16px}
+    .split-mode-btn{flex:1;padding:6px 12px;background:none;border:none;color:var(--muted);font-family:var(--font);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;cursor:pointer;transition:background .15s,color .15s}
+    .split-mode-btn.active{background:var(--accent);color:#fff}
+    .split-rows{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+    .split-row{display:grid;grid-template-columns:1fr 120px 28px;gap:8px;align-items:center}
+    .split-bucket-sel{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);padding:7px 10px;font-family:var(--font);font-size:11px;width:100%;transition:border-color .15s}
+    .split-bucket-sel:focus{border-color:var(--accent)}
+    .split-amt-wrap{display:flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0 8px;transition:border-color .15s}
+    .split-amt-wrap:focus-within{border-color:var(--accent)}
+    .split-amt-inp{background:transparent;border:none;color:var(--text);font-family:var(--num-font);font-variant-numeric:tabular-nums;font-size:13px;width:70px;padding:7px 0;text-align:right}
+    .split-remove-btn{width:26px;height:26px;padding:0;background:none;border:1px solid transparent;border-radius:5px;color:var(--muted);font-size:16px;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s}
+    .split-remove-btn:hover{color:var(--red);border-color:rgba(239,68,68,.3)}
+    .add-split-btn{width:100%;padding:8px;background:none;border:1px dashed var(--border);border-radius:var(--radius-sm);color:var(--muted);font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer;transition:color .15s,border-color .15s;margin-bottom:10px}
+    .add-split-btn:hover{color:var(--accent);border-color:var(--accent)}
+    .split-remaining{font-family:var(--num-font);font-variant-numeric:tabular-nums;font-size:11px;text-align:right;padding:4px 0;font-weight:700}
+    .split-remaining.ok{color:var(--green)}
+    .split-remaining.warn{color:var(--yellow)}
+    .split-remaining.over{color:var(--red)}
+    .split-badge{background:rgba(99,102,241,.12);color:var(--accent)}
+
     /* Responsive */
     @media(max-width:680px){
       .app-header{padding:12px 16px}
@@ -510,7 +531,18 @@
       <div class="modal-merchant" id="modal-merchant">—</div>
       <div class="modal-sub"      id="modal-sub">—</div>
     </div>
-    <div class="picker-grid" id="picker-grid"></div>
+    <div class="split-mode-toggle">
+      <button class="split-mode-btn active" id="modal-single-btn" onclick="setModalMode('single')">Single</button>
+      <button class="split-mode-btn"        id="modal-split-btn"  onclick="setModalMode('split')">Split</button>
+    </div>
+    <div id="modal-single-view">
+      <div class="picker-grid" id="picker-grid"></div>
+    </div>
+    <div id="modal-split-view" style="display:none">
+      <div class="split-rows" id="split-rows"></div>
+      <button class="add-split-btn" onclick="addSplitRow()">+ Add line</button>
+      <div class="split-remaining" id="split-remaining"></div>
+    </div>
     <div class="modal-footer">
       <button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button>
       <button class="btn btn-primary btn-sm" onclick="applyOverride()">Save</button>
@@ -616,7 +648,8 @@ let buckets=[],transactions=[],accounts=[],overrides={},
     accessToken=null,cursor=null,lastSynced=null,
     isDemoMode=false,activeTxnId=null,pendingBid=null,
     txnFilter='month',viewMonthOffset=0,
-    activeBucketId=null,bucketDetailYear=0,bucketDetailMonth=0;
+    activeBucketId=null,bucketDetailYear=0,bucketDetailMonth=0,
+    pendingSplits=[],isSplitMode=false;
 
 /* Storage */
 function loadStorage(){
@@ -643,7 +676,9 @@ function cacheAccounts(){localStorage.setItem('cached_accounts',JSON.stringify(a
 function isIncome(t){return t.amount<0}
 function getBucketId(txn){
   if(isIncome(txn))return null;
-  if(overrides[txn.transaction_id]){const oid=overrides[txn.transaction_id];if(getBucket(oid))return oid;}
+  const o=overrides[txn.transaction_id];
+  if(Array.isArray(o))return o[0]?.bucket||null;
+  if(o&&getBucket(o))return o;
   const pfc=txn.personal_finance_category;
   if(pfc?.primary){const fn=PFC_MAP[pfc.primary];if(fn){const r=fn(pfc);if(r===null)return null;if(r&&getBucket(r))return r;}}
   const cats=txn.category||[];
@@ -652,6 +687,14 @@ function getBucketId(txn){
   return getBucket('misc')?.id||buckets[buckets.length-1]?.id||null;
 }
 function getBucket(id){return buckets.find(b=>b.id===id)}
+function getTransactionContributions(t){
+  if(isIncome(t))return[];
+  const o=overrides[t.transaction_id];
+  if(Array.isArray(o))return o.filter(s=>getBucket(s.bucket)).map(s=>({bucketId:s.bucket,amount:s.amount}));
+  const bid=getBucketId(t);
+  if(bid===null)return[];
+  return[{bucketId:bid,amount:t.amount}];
+}
 function monthPrefix(){const n=new Date();return`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`}
 function currentMonthTxns(){return transactions.filter(t=>t.date?.startsWith(monthPrefix()))}
 
@@ -666,9 +709,10 @@ function viewSpendByBucket(){
   const out={};
   buckets.forEach(b=>{out[b.id]=0;});
   viewMonthTxns().filter(t=>!isIncome(t)).forEach(t=>{
-    const bid=getBucketId(t);if(bid===null)return;
-    if(out[bid]!==undefined)out[bid]+=t.amount;
-    else{const fb=getBucket('misc')?.id||buckets[buckets.length-1]?.id;if(fb)out[fb]=(out[fb]||0)+t.amount;}
+    getTransactionContributions(t).forEach(({bucketId,amount})=>{
+      if(out[bucketId]!==undefined)out[bucketId]+=amount;
+      else{const fb=getBucket('misc')?.id||buckets[buckets.length-1]?.id;if(fb)out[fb]=(out[fb]||0)+amount;}
+    });
   });
   return out;
 }
@@ -681,9 +725,10 @@ function spendByBucket(){
   const out={};
   buckets.forEach(b=>{out[b.id]=0;});
   currentMonthTxns().filter(t=>!isIncome(t)).forEach(t=>{
-    const bid=getBucketId(t);if(bid===null)return;
-    if(out[bid]!==undefined)out[bid]+=t.amount;
-    else{const fb=getBucket('misc')?.id||buckets[buckets.length-1]?.id;if(fb)out[fb]=(out[fb]||0)+t.amount;}
+    getTransactionContributions(t).forEach(({bucketId,amount})=>{
+      if(out[bucketId]!==undefined)out[bucketId]+=amount;
+      else{const fb=getBucket('misc')?.id||buckets[buckets.length-1]?.id;if(fb)out[fb]=(out[fb]||0)+amount;}
+    });
   });
   return out;
 }
@@ -893,8 +938,13 @@ function renderBucketDetail(){
   const b=getBucket(activeBucketId);
   if(!b){closeBucketDetail();return;}
 
-  // All transactions for this bucket (all time)
-  const allBucketTxns=transactions.filter(t=>!isIncome(t)&&getBucketId(t)===activeBucketId);
+  // All transactions for this bucket (all time) — include split transactions that have a line for this bucket
+  const allBucketTxns=transactions.filter(t=>{
+    if(isIncome(t))return false;
+    const o=overrides[t.transaction_id];
+    if(Array.isArray(o))return o.some(s=>s.bucket===activeBucketId);
+    return getBucketId(t)===activeBucketId;
+  });
 
   // Available years from data (plus current year always)
   const now=new Date();
@@ -910,7 +960,11 @@ function renderBucketDetail(){
   if(bucketDetailMonth>0)filtered=filtered.filter(t=>+t.date?.slice(5,7)===bucketDetailMonth);
   filtered.sort((a,b)=>b.date.localeCompare(a.date));
 
-  const total=filtered.reduce((s,t)=>s+t.amount,0);
+  const total=filtered.reduce((s,t)=>{
+    const o=overrides[t.transaction_id];
+    if(Array.isArray(o)){const sp=o.find(s=>s.bucket===activeBucketId);return s+(sp?sp.amount:0);}
+    return s+t.amount;
+  },0);
 
   // Year options
   const yearOpts=dataYears.map(y=>`<option value="${y}"${y===bucketDetailYear?' selected':''}>${y}</option>`).join('');
@@ -924,7 +978,11 @@ function renderBucketDetail(){
   const groups={};
   filtered.forEach(t=>{(groups[t.date]=groups[t.date]||[]).push(t);});
   const groupsHtml=Object.keys(groups).sort((a,b)=>b.localeCompare(a))
-    .map(date=>`<div class="date-group"><div class="date-header">${fmtDate(date)}</div>${groups[date].map(t=>txnRowFull(t,true)).join('')}</div>`)
+    .map(date=>`<div class="date-group"><div class="date-header">${fmtDate(date)}</div>${groups[date].map(t=>{
+      const o=overrides[t.transaction_id];
+      const displayAmt=Array.isArray(o)?(o.find(s=>s.bucket===activeBucketId)?.amount??null):null;
+      return txnRowFull(t,true,displayAmt);
+    }).join('')}</div>`)
     .join('');
 
   const periodLabel=bucketDetailMonth>0
@@ -977,19 +1035,24 @@ function renderTransactionsTab(){
     .map(date=>`<div class="date-group"><div class="date-header">${fmtDate(date)}</div>${groups[date].map(t=>txnRowFull(t)).join('')}</div>`).join('');
 }
 
-function txnRowFull(t,hideCategory=false){
+function txnRowFull(t,hideCategory=false,displayAmount=null){
   const inc=isIncome(t);
+  const isSplit=!inc&&Array.isArray(overrides[t.transaction_id]);
   const bid=inc?null:(getBucketId(t)||buckets[buckets.length-1]?.id);
   const b=bid?getBucket(bid):null;
   const color=b?.color||'#64748b';
   const icon=inc?'💰':(b?.icon||'📦');
   const merchant=t.merchant_name||t.name||'Unknown';
   const acctLbl=accountLabel(t);
-  const manual=!inc&&bid&&!!overrides[t.transaction_id];
+  const manual=!inc&&!isSplit&&bid&&!!overrides[t.transaction_id];
   const onclick=inc?'':`onclick="openModal('${esc(t.transaction_id)}')"`;
-  const catBadge=inc
-    ?`<span class="cat-badge" style="background:rgba(34,197,94,.12);color:var(--green)">Income</span>`
-    :(b&&!hideCategory?`<span class="cat-badge" style="background:${color}1a;color:${color}">${manual?'<span class="overridden-dot"></span>':''}${esc(b.name)}</span>`:'');
+  let catBadge='';
+  if(inc)catBadge=`<span class="cat-badge" style="background:rgba(34,197,94,.12);color:var(--green)">Income</span>`;
+  else if(isSplit&&!hideCategory)catBadge=`<span class="cat-badge split-badge">✂ Split</span>`;
+  else if(b&&!hideCategory)catBadge=`<span class="cat-badge" style="background:${color}1a;color:${color}">${manual?'<span class="overridden-dot"></span>':''}${esc(b.name)}</span>`;
+  const showAmt=displayAmount!==null?displayAmount:Math.abs(t.amount);
+  const amtClass=displayAmount!==null?'debit':(inc?'credit':'debit');
+  const amtSign=displayAmount!==null?'-':(inc?'+':'-');
   return `
 <div class="txn-row${inc?' no-click':''}" ${onclick}>
   <div class="txn-left">
@@ -1003,7 +1066,7 @@ function txnRowFull(t,hideCategory=false){
       </div>
     </div>
   </div>
-  <div class="txn-right"><div class="txn-amount ${inc?'credit':'debit'}">${inc?'+':'-'}$${Math.abs(t.amount).toFixed(2)}</div></div>
+  <div class="txn-right"><div class="txn-amount ${amtClass}">${amtSign}$${showAmt.toFixed(2)}</div></div>
 </div>`;}
 
 /* Income tab */
@@ -1107,10 +1170,21 @@ function deleteBucket(id){
 function openModal(txnId){
   const t=transactions.find(t=>t.transaction_id===txnId);
   if(!t||isIncome(t))return;
-  activeTxnId=txnId;pendingBid=getBucketId(t)||buckets[0]?.id;
+  activeTxnId=txnId;
+  const existingOverride=overrides[txnId];
+  if(Array.isArray(existingOverride)){
+    isSplitMode=true;pendingSplits=existingOverride.map(s=>({...s}));pendingBid=null;
+  } else {
+    isSplitMode=false;pendingSplits=[];pendingBid=getBucketId(t)||buckets[0]?.id;
+  }
   qs('#modal-merchant').textContent=t.merchant_name||t.name||'Unknown';
   qs('#modal-sub').textContent=`-$${t.amount.toFixed(2)} · ${fmtDate(t.date)}`;
-  renderPicker();qs('#cat-modal').classList.add('open');
+  qs('#modal-single-btn').classList.toggle('active',!isSplitMode);
+  qs('#modal-split-btn').classList.toggle('active',isSplitMode);
+  qs('#modal-single-view').style.display=isSplitMode?'none':'';
+  qs('#modal-split-view').style.display=isSplitMode?'':'none';
+  if(isSplitMode)renderSplitRows();else renderPicker();
+  qs('#cat-modal').classList.add('open');
 }
 function renderPicker(){
   qs('#picker-grid').innerHTML=buckets.map(b=>
@@ -1118,8 +1192,72 @@ function renderPicker(){
       <span>${b.icon}</span><span>${esc(b.name)}</span></button>`).join('');
 }
 function pickBucket(bid){pendingBid=bid;renderPicker();}
-function applyOverride(){if(activeTxnId&&pendingBid){overrides[activeTxnId]=pendingBid;saveOverrides();}closeModal();render();}
-function closeModal(){qs('#cat-modal').classList.remove('open');activeTxnId=null;pendingBid=null;}
+function setModalMode(mode){
+  isSplitMode=mode==='split';
+  qs('#modal-single-btn').classList.toggle('active',!isSplitMode);
+  qs('#modal-split-btn').classList.toggle('active',isSplitMode);
+  qs('#modal-single-view').style.display=isSplitMode?'none':'';
+  qs('#modal-split-view').style.display=isSplitMode?'':'none';
+  if(isSplitMode){
+    if(pendingSplits.length===0){
+      const t=transactions.find(t=>t.transaction_id===activeTxnId);
+      const total=t?.amount||0;
+      pendingSplits=[
+        {bucket:pendingBid||buckets[0]?.id||'',amount:total},
+        {bucket:buckets[1]?.id||buckets[0]?.id||'',amount:0},
+      ];
+    }
+    renderSplitRows();
+  }
+}
+function renderSplitRows(){
+  const rowsHtml=pendingSplits.map((s,i)=>`
+<div class="split-row">
+  <select class="split-bucket-sel" onchange="updateSplitBucket(${i},this.value)">
+    ${buckets.map(b=>`<option value="${b.id}"${b.id===s.bucket?' selected':''}>${b.icon} ${esc(b.name)}</option>`).join('')}
+  </select>
+  <div class="split-amt-wrap">
+    <span style="color:var(--muted);font-family:var(--num-font);font-size:12px">$</span>
+    <input class="split-amt-inp" type="number" min="0" step="0.01" value="${s.amount||''}"
+      oninput="updateSplitAmount(${i},this.value)">
+  </div>
+  <button class="split-remove-btn" onclick="removeSplitRow(${i})">×</button>
+</div>`).join('');
+  qs('#split-rows').innerHTML=rowsHtml;
+  updateSplitRemaining();
+}
+function updateSplitRemaining(){
+  const t=transactions.find(t=>t.transaction_id===activeTxnId);
+  if(!t)return;
+  const total=t.amount;
+  const allocated=pendingSplits.reduce((s,r)=>s+(parseFloat(r.amount)||0),0);
+  const rem=total-allocated;
+  const el=qs('#split-remaining');if(!el)return;
+  if(Math.abs(rem)<0.005){el.textContent='✓ Fully allocated';el.className='split-remaining ok';}
+  else if(rem>0){el.textContent=`$${rem.toFixed(2)} remaining`;el.className='split-remaining warn';}
+  else{el.textContent=`$${Math.abs(rem).toFixed(2)} over total`;el.className='split-remaining over';}
+}
+function updateSplitBucket(i,val){pendingSplits[i].bucket=val;}
+function updateSplitAmount(i,val){pendingSplits[i].amount=Math.max(0,parseFloat(val)||0);updateSplitRemaining();}
+function addSplitRow(){pendingSplits.push({bucket:buckets[0]?.id||'',amount:0});renderSplitRows();}
+function removeSplitRow(i){if(pendingSplits.length<=1)return;pendingSplits.splice(i,1);renderSplitRows();}
+function applyOverride(){
+  if(isSplitMode){
+    const t=transactions.find(t=>t.transaction_id===activeTxnId);
+    if(!t)return closeModal();
+    const validSplits=pendingSplits.filter(s=>s.amount>0&&getBucket(s.bucket));
+    if(validSplits.length<2){alert('Add at least 2 lines to split a transaction.');return;}
+    const splitTotal=validSplits.reduce((s,r)=>s+r.amount,0);
+    if(Math.abs(splitTotal-t.amount)>0.01){
+      alert(`Splits must add up to $${t.amount.toFixed(2)}. Currently: $${splitTotal.toFixed(2)}.`);return;
+    }
+    overrides[activeTxnId]=validSplits;
+  } else {
+    if(activeTxnId&&pendingBid)overrides[activeTxnId]=pendingBid;
+  }
+  saveOverrides();closeModal();render();
+}
+function closeModal(){qs('#cat-modal').classList.remove('open');activeTxnId=null;pendingBid=null;pendingSplits=[];isSplitMode=false;}
 function onOverlayClick(e){if(e.target===qs('#cat-modal'))closeModal();}
 
 /* Disconnect */
