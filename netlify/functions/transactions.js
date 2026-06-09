@@ -1,57 +1,48 @@
-const { Configuration, PlaidApi, PlaidEnvironments } = require('plaid');
-
-const plaidClient = new PlaidApi(
-  new Configuration({
-    basePath: PlaidEnvironments[process.env.PLAID_ENV || 'sandbox'],
-    baseOptions: {
-      headers: {
-        'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
-        'PLAID-SECRET':    process.env.PLAID_SECRET,
-      },
-    },
-  })
-);
+const PLAID_BASE = `https://${process.env.PLAID_ENV || 'sandbox'}.plaid.com`;
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
 
   try {
     const { access_token, cursor } = JSON.parse(event.body || '{}');
-    if (!access_token) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'access_token required' }) };
-    }
+    if (!access_token) return { statusCode: 400, body: JSON.stringify({ error: 'access_token required' }) };
 
-    const added    = [];
-    const modified = [];
-    const removed  = [];
-    let   nextCursor = cursor || '';
-    let   hasMore    = true;
-    let   accounts   = [];
+    let added = [], modified = [], removed = [], next_cursor = cursor || null, accounts = [];
+    let has_more = true;
 
-    while (hasMore) {
-      const resp = await plaidClient.transactionsSync({
+    while (has_more) {
+      const reqBody = {
         access_token,
-        cursor:  nextCursor,
         options: { include_personal_finance_category: true },
+      };
+      if (next_cursor) reqBody.cursor = next_cursor;
+
+      const res = await fetch(`${PLAID_BASE}/transactions/sync`, {
+        method: 'POST',
+        headers: {
+          'Content-Type':    'application/json',
+          'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
+          'PLAID-SECRET':    process.env.PLAID_SECRET,
+        },
+        body: JSON.stringify(reqBody),
       });
-      added.push(...resp.data.added);
-      modified.push(...resp.data.modified);
-      removed.push(...resp.data.removed);
-      nextCursor = resp.data.next_cursor;
-      hasMore    = resp.data.has_more;
-      if (resp.data.accounts?.length) accounts = resp.data.accounts;
+      const data = await res.json();
+      if (!res.ok) throw data;
+
+      added.push(...(data.added || []));
+      modified.push(...(data.modified || []));
+      removed.push(...(data.removed || []));
+      next_cursor = data.next_cursor;
+      has_more = data.has_more;
+      if (!accounts.length && data.accounts) accounts = data.accounts;
     }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ added, modified, removed, next_cursor: nextCursor, accounts }),
+      body: JSON.stringify({ added, modified, removed, next_cursor, accounts }),
     };
   } catch (err) {
-    const plaidErr = err.response?.data;
-    console.error('transactions sync:', plaidErr?.error_code || err.message);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: plaidErr?.error_code || 'PLAID_ERROR' }),
-    };
+    console.error('transactions:', err.error_code || err);
+    return { statusCode: 500, body: JSON.stringify({ error: err.error_code || 'PLAID_ERROR' }) };
   }
 };
