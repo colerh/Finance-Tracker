@@ -26,7 +26,7 @@
     html{scroll-behavior:smooth}
     body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;line-height:1.6;min-height:100vh}
     button{cursor:pointer}
-    input:focus{outline:none}
+    input:focus,select:focus{outline:none}
 
     .sticky-top{position:sticky;top:0;z-index:200}
 
@@ -58,7 +58,7 @@
     .tab-btn{
       padding:10px 16px;background:none;border:none;
       border-bottom:2px solid transparent;
-      color:var(--muted);font-family:var(--font);font-size:10px;
+      color:var(--muted);font-family:var(--font);font-size:12px;
       font-weight:700;text-transform:uppercase;letter-spacing:1.2px;
       cursor:pointer;transition:color .15s,border-color .15s;
       margin-bottom:-1px;white-space:nowrap;
@@ -80,7 +80,8 @@
     .btn-outline{background:transparent;color:var(--text);border:1px solid var(--border)}
     .btn-outline:hover{border-color:var(--accent);color:var(--accent);opacity:1}
     .btn-ghost{background:transparent;color:var(--muted);border:1px solid transparent;font-size:11px}
-    .btn-ghost:hover{color:var(--red);border-color:rgba(239,68,68,.3);opacity:1}
+    .btn-ghost:hover{color:var(--text);opacity:1}
+    .btn-red:hover{color:var(--red);border-color:rgba(239,68,68,.3);opacity:1}
     .btn-sm{padding:5px 12px;font-size:11px}
 
     /* Connect screen */
@@ -140,30 +141,35 @@
     .seg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
     .seg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 
+    /* Month navigation */
+    .month-nav{display:flex;align-items:center;gap:8px}
+    .month-nav-btn{
+      background:none;border:1px solid var(--border);border-radius:5px;
+      color:var(--muted);width:24px;height:24px;padding:0;
+      display:flex;align-items:center;justify-content:center;
+      font-size:15px;line-height:1;
+      transition:color .15s,border-color .15s;
+    }
+    .month-nav-btn:hover:not(:disabled){color:var(--accent);border-color:var(--accent)}
+    .month-nav-btn:disabled{opacity:.3;cursor:default}
+
     /* Bucket cards */
     .buckets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin-bottom:48px}
     .bucket-card{
       background:var(--card);border:1px solid var(--border);
-      border-radius:var(--radius);padding:20px;transition:border-color .2s,background .2s;
+      border-radius:var(--radius);padding:20px;
+      transition:border-color .2s,background .2s,transform .15s;
+      cursor:pointer;
     }
-    .bucket-card:hover{border-color:rgba(99,102,241,.4);background:var(--card-hover)}
+    .bucket-card:hover{border-color:rgba(99,102,241,.45);background:var(--card-hover);transform:translateY(-1px)}
+    .bucket-card:active{transform:translateY(0)}
     .bucket-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
     .bucket-name-row{display:flex;align-items:center;gap:8px}
     .bucket-icon{font-size:20px}
     .bucket-name{font-weight:700;font-size:13px}
     .budget-right{text-align:right}
     .budget-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
-    .budget-display{
-      font-family:var(--num-font);font-variant-numeric:tabular-nums;
-      font-size:14px;font-weight:700;padding:3px 7px;border-radius:5px;
-      cursor:pointer;transition:background .15s,color .15s;
-    }
-    .budget-display:hover{background:var(--accent-glow);color:var(--accent)}
-    .budget-input{
-      background:var(--bg);border:1px solid var(--accent);color:var(--text);
-      font-family:var(--num-font);font-size:13px;font-weight:700;
-      padding:3px 7px;border-radius:5px;width:80px;text-align:right;
-    }
+    .budget-val{font-family:var(--num-font);font-variant-numeric:tabular-nums;font-size:14px;font-weight:700;color:var(--muted)}
     .prog-track{height:7px;background:rgba(255,255,255,.07);border-radius:10px;overflow:hidden;margin:12px 0 14px}
     .prog-fill{height:100%;border-radius:10px;transition:width .6s cubic-bezier(.4,0,.2,1),background .3s}
     .prog-fill.g{background:var(--green)}
@@ -176,6 +182,36 @@
     .remain-amount{font-family:var(--num-font);font-variant-numeric:tabular-nums;font-size:14px;font-weight:700;text-align:right}
     .remain-amount.over{color:var(--red)}
     .remain-amount.ok{color:var(--green)}
+
+    /* Bucket detail view */
+    .bucket-detail-header{
+      display:flex;align-items:center;gap:14px;margin-bottom:22px;
+    }
+    .bucket-detail-title{
+      display:flex;align-items:center;gap:9px;
+      font-size:20px;font-weight:700;
+    }
+    .bucket-detail-summary{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:var(--radius);padding:18px 22px;
+      margin-bottom:20px;
+      display:flex;align-items:center;gap:28px;flex-wrap:wrap;
+    }
+    .bds-block{display:flex;flex-direction:column;gap:3px}
+    .bds-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+    .bds-amount{font-family:var(--num-font);font-variant-numeric:tabular-nums;font-size:26px;font-weight:700;line-height:1}
+    .bds-count{font-size:11px;color:var(--muted)}
+    .bucket-detail-filters{
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:24px;
+    }
+    .detail-select{
+      background:var(--surface);border:1px solid var(--border);
+      color:var(--text);border-radius:var(--radius-sm);
+      padding:7px 12px;font-family:var(--font);font-size:11px;
+      cursor:pointer;transition:border-color .15s;
+    }
+    .detail-select:focus{border-color:var(--accent)}
+    .filters-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
 
     /* Transaction rows */
     .filter-toggle{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
@@ -348,6 +384,7 @@
       .bucket-setting-row{grid-template-columns:40px 1fr 100px 34px 30px;gap:7px;padding:8px 10px}
       .total-agg-spent{font-size:22px}
       .income-hero-amount{font-size:26px}
+      .bds-amount{font-size:20px}
     }
     @media(max-width:440px){
       .header-right .sync-info{display:none}
@@ -413,12 +450,21 @@
       <span>📊 Demo Mode — sample data only</span>
       <button class="btn btn-primary btn-sm" onclick="handleConnect()">Connect Real Bank</button>
     </div>
-    <div class="total-agg-card" id="total-agg-card"></div>
-    <div class="section-header">
-      <div class="section-title">Budget Buckets</div>
-      <button class="btn btn-ghost btn-sm" id="disconnect-btn" onclick="handleDisconnect()" style="display:none">disconnect</button>
+
+    <!-- Overview: budget grid -->
+    <div id="overview-main-view">
+      <div class="total-agg-card" id="total-agg-card"></div>
+      <div class="section-header">
+        <div class="section-title">Budget Buckets</div>
+        <button class="btn btn-ghost btn-red btn-sm" id="disconnect-btn" onclick="handleDisconnect()" style="display:none">disconnect</button>
+      </div>
+      <div class="buckets-grid" id="buckets-grid"></div>
     </div>
-    <div class="buckets-grid" id="buckets-grid"></div>
+
+    <!-- Overview: bucket detail -->
+    <div id="bucket-detail-view" style="display:none">
+      <div id="bucket-detail-content"></div>
+    </div>
   </div>
 </div>
 
@@ -520,9 +566,13 @@ function makeDemoTxns(){
   const now=new Date();
   const y=now.getFullYear(),mo=String(now.getMonth()+1).padStart(2,'0'),today=now.getDate();
   const d=n=>`${y}-${mo}-${String(Math.min(n,today)).padStart(2,'0')}`;
+  const prevDate=new Date(now.getFullYear(),now.getMonth()-1,1);
+  const py=prevDate.getFullYear(),pmo=String(prevDate.getMonth()+1).padStart(2,'0');
+  const pd=n=>`${py}-${pmo}-${String(n).padStart(2,'0')}`;
   return [
-    {transaction_id:'i01',merchant_name:'Direct Deposit',   amount:-4500.00,date:d(1), pending:false,account_id:'acc01',category:['Payroll'],personal_finance_category:{primary:'INCOME',   detailed:'INCOME_WAGES'}},
-    {transaction_id:'i02',merchant_name:'Freelance Payment',amount:-850.00, date:d(12),pending:false,account_id:'acc01',category:['Payroll'],personal_finance_category:{primary:'INCOME',   detailed:'INCOME_OTHER_INCOME'}},
+    // Current month
+    {transaction_id:'i01',merchant_name:'Direct Deposit',   amount:-4500.00,date:d(1), pending:false,account_id:'acc01',category:['Payroll'],personal_finance_category:{primary:'INCOME',detailed:'INCOME_WAGES'}},
+    {transaction_id:'i02',merchant_name:'Freelance Payment',amount:-850.00, date:d(12),pending:false,account_id:'acc01',category:['Payroll'],personal_finance_category:{primary:'INCOME',detailed:'INCOME_OTHER_INCOME'}},
     {transaction_id:'d01',merchant_name:'Rent Payment',      amount:1500.00,date:d(1), pending:false,account_id:'acc01',category:['Payment']},
     {transaction_id:'d02',merchant_name:'Con Edison',         amount:94.20,  date:d(2), pending:false,account_id:'acc01',category:['Utilities']},
     {transaction_id:'d03',merchant_name:'Whole Foods Market', amount:78.43,  date:d(3), pending:false,account_id:'acc02',category:['Food and Drink','Groceries']},
@@ -543,13 +593,31 @@ function makeDemoTxns(){
     {transaction_id:'d18',merchant_name:'AMC Theaters',       amount:22.50,  date:d(17),pending:false,account_id:'acc02',category:['Recreation']},
     {transaction_id:'d19',merchant_name:'Walgreens',          amount:18.35,  date:d(18),pending:false,account_id:'acc02',category:['Healthcare']},
     {transaction_id:'d20',merchant_name:'Delta Airlines',     amount:289.00, date:d(19),pending:true, account_id:'acc02',category:['Travel']},
-  ].filter(t=>t.date<=d(today));
+    // Previous month
+    {transaction_id:'p01',merchant_name:'Direct Deposit',    amount:-4500.00,date:pd(1), pending:false,account_id:'acc01',category:['Payroll'],personal_finance_category:{primary:'INCOME',detailed:'INCOME_WAGES'}},
+    {transaction_id:'p02',merchant_name:'Rent Payment',       amount:1500.00, date:pd(1), pending:false,account_id:'acc01',category:['Payment']},
+    {transaction_id:'p03',merchant_name:'Con Edison',          amount:88.10,   date:pd(3), pending:false,account_id:'acc01',category:['Utilities']},
+    {transaction_id:'p04',merchant_name:'Whole Foods Market',  amount:91.22,   date:pd(5), pending:false,account_id:'acc02',category:['Food and Drink','Groceries']},
+    {transaction_id:'p05',merchant_name:'Netflix',             amount:15.99,   date:pd(4), pending:false,account_id:'acc02',category:['Recreation']},
+    {transaction_id:'p06',merchant_name:'Shell Gas Station',   amount:61.40,   date:pd(7), pending:false,account_id:'acc02',category:['Travel','Gas Stations']},
+    {transaction_id:'p07',merchant_name:'Amazon',              amount:210.55,  date:pd(10),pending:false,account_id:'acc02',category:['Shops']},
+    {transaction_id:'p08',merchant_name:'Spotify',             amount:9.99,    date:pd(11),pending:false,account_id:'acc02',category:['Recreation']},
+    {transaction_id:'p09',merchant_name:'Target',              amount:77.43,   date:pd(14),pending:false,account_id:'acc02',category:['Shops']},
+    {transaction_id:'p10',merchant_name:'Planet Fitness',      amount:25.00,   date:pd(15),pending:false,account_id:'acc02',category:['Healthcare']},
+    {transaction_id:'p11',merchant_name:'Chipotle',            amount:11.25,   date:pd(18),pending:false,account_id:'acc02',category:['Food and Drink','Restaurants']},
+    {transaction_id:'p12',merchant_name:"Trader Joe's",        amount:54.60,   date:pd(20),pending:false,account_id:'acc02',category:['Food and Drink','Groceries']},
+    {transaction_id:'p13',merchant_name:'Freelance Payment',   amount:-650.00, date:pd(22),pending:false,account_id:'acc01',category:['Payroll'],personal_finance_category:{primary:'INCOME',detailed:'INCOME_OTHER_INCOME'}},
+    {transaction_id:'p14',merchant_name:'Uber',                amount:24.50,   date:pd(24),pending:false,account_id:'acc02',category:['Travel']},
+    {transaction_id:'p15',merchant_name:'CVS Pharmacy',        amount:33.10,   date:pd(27),pending:false,account_id:'acc02',category:['Healthcare']},
+  ];
 }
 
 /* State */
 let buckets=[],transactions=[],accounts=[],overrides={},
     accessToken=null,cursor=null,lastSynced=null,
-    isDemoMode=false,activeTxnId=null,pendingBid=null,txnFilter='month';
+    isDemoMode=false,activeTxnId=null,pendingBid=null,
+    txnFilter='month',viewMonthOffset=0,
+    activeBucketId=null,bucketDetailYear=0,bucketDetailMonth=0;
 
 /* Storage */
 function loadStorage(){
@@ -585,11 +653,34 @@ function getBucketId(txn){
   return getBucket('misc')?.id||buckets[buckets.length-1]?.id||null;
 }
 function getBucket(id){return buckets.find(b=>b.id===id)}
-function monthPrefix(){const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`}
+function monthPrefix(){const n=new Date();return`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`}
 function currentMonthTxns(){return transactions.filter(t=>t.date?.startsWith(monthPrefix()))}
+
+/* View-month helpers (overview month nav) */
+function viewMonthPrefix(){
+  const now=new Date();
+  const d=new Date(now.getFullYear(),now.getMonth()+viewMonthOffset,1);
+  return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+function viewMonthTxns(){return transactions.filter(t=>t.date?.startsWith(viewMonthPrefix()));}
+function viewSpendByBucket(){
+  const out={};
+  buckets.forEach(b=>{out[b.id]=0;});
+  viewMonthTxns().filter(t=>!isIncome(t)).forEach(t=>{
+    const bid=getBucketId(t);if(bid===null)return;
+    if(out[bid]!==undefined)out[bid]+=t.amount;
+    else{const fb=getBucket('misc')?.id||buckets[buckets.length-1]?.id;if(fb)out[fb]=(out[fb]||0)+t.amount;}
+  });
+  return out;
+}
+function shiftMonth(dir){
+  viewMonthOffset=Math.min(0,viewMonthOffset+dir);
+  renderOverviewTab();
+}
+
 function spendByBucket(){
   const out={};
-  buckets.forEach(b=>{out[b.id]=0});
+  buckets.forEach(b=>{out[b.id]=0;});
   currentMonthTxns().filter(t=>!isIncome(t)).forEach(t=>{
     const bid=getBucketId(t);if(bid===null)return;
     if(out[bid]!==undefined)out[bid]+=t.amount;
@@ -611,6 +702,7 @@ function switchTab(name){
     qs(`#tab-${t}-btn`).classList.toggle('active',t===name);
   });
   if(name==='buckets')renderBucketsTab();
+  if(name==='overview')renderOverviewTab();
 }
 function setTxnFilter(f){
   txnFilter=f;
@@ -680,7 +772,10 @@ async function sync(){
   }finally{hideLoad();}
 }
 
-function loadDemo(){isDemoMode=true;transactions=makeDemoTxns();accounts=DEMO_ACCOUNTS;render();switchTab('overview');}
+function loadDemo(){
+  isDemoMode=true;transactions=makeDemoTxns();accounts=DEMO_ACCOUNTS;
+  activeBucketId=null;render();switchTab('overview');
+}
 
 /* Render */
 function render(){
@@ -698,16 +793,36 @@ function render(){
   const hasData=transactions.length>0||isDemoMode||accessToken;
   qs('#connect-screen').style.display=hasData?'none':'flex';
   qs('#app-main').style.display=hasData?'block':'none';
-  renderTotalCard(spend);
-  renderBuckets(spend);
+  renderOverviewTab();
   renderTransactionsTab();
   renderIncomeTab();
+}
+
+/* Overview tab dispatcher */
+function renderOverviewTab(){
+  const mainView=qs('#overview-main-view');
+  const detailView=qs('#bucket-detail-view');
+  if(!mainView||!detailView)return;
+  if(activeBucketId){
+    mainView.style.display='none';
+    detailView.style.display='';
+    renderBucketDetail();
+  } else {
+    mainView.style.display='';
+    detailView.style.display='none';
+    const spend=viewSpendByBucket();
+    renderTotalCard(spend);
+    renderBuckets(spend);
+  }
 }
 
 /* Total aggregate card */
 function renderTotalCard(spend){
   const card=qs('#total-agg-card');if(!card)return;
-  const now=new Date();
+  const vpfx=viewMonthPrefix();
+  const[vy,vm]=vpfx.split('-').map(Number);
+  const viewDate=new Date(vy,vm-1,1);
+  const monthLabel=viewDate.toLocaleString('default',{month:'long',year:'numeric'});
   const totalBudget=buckets.reduce((s,b)=>s+b.budget,0);
   const totalSpend=Object.values(spend).reduce((s,v)=>s+v,0);
   const pct=totalBudget>0?(totalSpend/totalBudget)*100:0;
@@ -721,7 +836,11 @@ function renderTotalCard(spend){
 <div class="total-agg-top">
   <div>
     <div class="total-agg-label">Monthly Budget</div>
-    <div class="total-agg-month">${now.toLocaleString('default',{month:'long',year:'numeric'})}</div>
+    <div class="month-nav">
+      <button class="month-nav-btn" onclick="shiftMonth(-1)">‹</button>
+      <span class="total-agg-month">${monthLabel}</span>
+      <button class="month-nav-btn" onclick="shiftMonth(1)"${viewMonthOffset>=0?' disabled':''}>›</button>
+    </div>
   </div>
   <div class="total-agg-nums">
     <span class="total-agg-spent" style="color:${pctColor}">$${totalSpend.toFixed(2)}</span>
@@ -730,7 +849,7 @@ function renderTotalCard(spend){
   </div>
 </div>
 <div class="seg-bar-track">${segs||'<div style="flex:1;opacity:0"></div>'}</div>
-${legend?`<div class="seg-legend">${legend}</div>`:''}`;
+${legend?`<div class="seg-legend">${legend}</div>`:''}``;
 }
 
 /* Bucket cards */
@@ -739,12 +858,12 @@ function renderBuckets(spend){
     const s=spend[b.id]||0,pct=b.budget>0?Math.min((s/b.budget)*100,100):0;
     const bar=pct<60?'g':pct<85?'y':'r',rem=b.budget-s;
     return `
-<div class="bucket-card">
+<div class="bucket-card" onclick="openBucketDetail('${b.id}')">
   <div class="bucket-head">
     <div class="bucket-name-row"><span class="bucket-icon">${b.icon}</span><span class="bucket-name">${esc(b.name)}</span></div>
     <div class="budget-right">
       <div class="budget-label">Budget</div>
-      <div class="budget-display" id="bdg-${b.id}" onclick="editBudget('${b.id}')" title="Click to edit">$${b.budget.toFixed(0)}</div>
+      <div class="budget-val">$${b.budget.toFixed(0)}</div>
     </div>
   </div>
   <div class="prog-track"><div class="prog-fill ${bar}" style="width:${pct}%"></div></div>
@@ -754,6 +873,96 @@ function renderBuckets(spend){
   </div>
 </div>`;
   }).join('');
+}
+
+/* Bucket detail */
+function openBucketDetail(bid){
+  const now=new Date();
+  activeBucketId=bid;
+  bucketDetailYear=now.getFullYear();
+  bucketDetailMonth=now.getMonth()+1;
+  renderOverviewTab();
+}
+function closeBucketDetail(){
+  activeBucketId=null;
+  renderOverviewTab();
+}
+function setBucketDetailYear(v){bucketDetailYear=+v;renderBucketDetail();}
+function setBucketDetailMonth(v){bucketDetailMonth=+v;renderBucketDetail();}
+
+function renderBucketDetail(){
+  const container=qs('#bucket-detail-content');if(!container)return;
+  const b=getBucket(activeBucketId);
+  if(!b){closeBucketDetail();return;}
+
+  // All transactions for this bucket (all time)
+  const allBucketTxns=transactions.filter(t=>!isIncome(t)&&getBucketId(t)===activeBucketId);
+
+  // Available years from data (plus current year always)
+  const now=new Date();
+  const dataYears=[...new Set(allBucketTxns.map(t=>t.date?.slice(0,4)).filter(Boolean))].map(Number);
+  if(!dataYears.includes(now.getFullYear()))dataYears.push(now.getFullYear());
+  dataYears.sort((a,z)=>z-a);
+
+  // If saved year not in list, reset to current
+  if(!dataYears.includes(bucketDetailYear))bucketDetailYear=now.getFullYear();
+
+  // Filter
+  let filtered=allBucketTxns.filter(t=>t.date?.startsWith(String(bucketDetailYear)));
+  if(bucketDetailMonth>0)filtered=filtered.filter(t=>+t.date?.slice(5,7)===bucketDetailMonth);
+  filtered.sort((a,b)=>b.date.localeCompare(a.date));
+
+  const total=filtered.reduce((s,t)=>s+t.amount,0);
+
+  // Year options
+  const yearOpts=dataYears.map(y=>`<option value="${y}"${y===bucketDetailYear?' selected':''}>${y}</option>`).join('');
+
+  // Month options
+  const MONTHS=['All Months','January','February','March','April','May','June',
+    'July','August','September','October','November','December'];
+  const monthOpts=MONTHS.map((m,i)=>`<option value="${i}"${i===bucketDetailMonth?' selected':''}>${m}</option>`).join('');
+
+  // Group by date
+  const groups={};
+  filtered.forEach(t=>{(groups[t.date]=groups[t.date]||[]).push(t);});
+  const groupsHtml=Object.keys(groups).sort((a,b)=>b.localeCompare(a))
+    .map(date=>`<div class="date-group"><div class="date-header">${fmtDate(date)}</div>${groups[date].map(t=>txnRowFull(t,true)).join('')}</div>`)
+    .join('');
+
+  const periodLabel=bucketDetailMonth>0
+    ?`${MONTHS[bucketDetailMonth]} ${bucketDetailYear}`
+    :`All of ${bucketDetailYear}`;
+
+  container.innerHTML=`
+<div class="bucket-detail-header">
+  <button class="btn btn-ghost btn-sm" onclick="closeBucketDetail()">← Back</button>
+  <div class="bucket-detail-title">
+    <span>${b.icon}</span><span>${esc(b.name)}</span>
+  </div>
+</div>
+<div class="bucket-detail-summary" style="border-left:3px solid ${b.color}">
+  <div class="bds-block">
+    <div class="bds-label">Total Spent</div>
+    <div class="bds-amount" style="color:${b.color}">$${total.toFixed(2)}</div>
+  </div>
+  <div class="bds-block">
+    <div class="bds-label">Transactions</div>
+    <div class="bds-amount" style="color:var(--text)">${filtered.length}</div>
+  </div>
+  <div class="bds-block">
+    <div class="bds-label">Period</div>
+    <div class="bds-count" style="font-size:13px;color:var(--text)">${periodLabel}</div>
+  </div>
+</div>
+<div class="bucket-detail-filters">
+  <span class="filters-label">Filter:</span>
+  <select class="detail-select" onchange="setBucketDetailYear(this.value)">${yearOpts}</select>
+  <select class="detail-select" onchange="setBucketDetailMonth(this.value)">${monthOpts}</select>
+</div>
+${filtered.length
+  ? groupsHtml
+  : '<div class="empty-state"><div class="empty-icon">✨</div><div class="empty-text">No transactions for this period</div></div>'
+}``;
 }
 
 /* Transactions tab */
@@ -768,10 +977,10 @@ function renderTransactionsTab(){
   const groups={};
   visible.forEach(t=>{(groups[t.date]=groups[t.date]||[]).push(t);});
   container.innerHTML=Object.keys(groups).sort((a,b)=>b.localeCompare(a))
-    .map(date=>`<div class="date-group"><div class="date-header">${fmtDate(date)}</div>${groups[date].map(txnRowFull).join('')}</div>`).join('');
+    .map(date=>`<div class="date-group"><div class="date-header">${fmtDate(date)}</div>${groups[date].map(t=>txnRowFull(t)).join('')}</div>`).join('');
 }
 
-function txnRowFull(t){
+function txnRowFull(t,hideCategory=false){
   const inc=isIncome(t);
   const bid=inc?null:(getBucketId(t)||buckets[buckets.length-1]?.id);
   const b=bid?getBucket(bid):null;
@@ -781,6 +990,9 @@ function txnRowFull(t){
   const acctLbl=accountLabel(t);
   const manual=!inc&&bid&&!!overrides[t.transaction_id];
   const onclick=inc?'':`onclick="openModal('${esc(t.transaction_id)}')"`;
+  const catBadge=inc
+    ?`<span class="cat-badge" style="background:rgba(34,197,94,.12);color:var(--green)">Income</span>`
+    :(b&&!hideCategory?`<span class="cat-badge" style="background:${color}1a;color:${color}">${manual?'<span class="overridden-dot"></span>':''}${esc(b.name)}</span>`:'');
   return `
 <div class="txn-row${inc?' no-click':''}" ${onclick}>
   <div class="txn-left">
@@ -788,10 +1000,7 @@ function txnRowFull(t){
     <div class="txn-info">
       <div class="txn-merchant">${esc(merchant)}</div>
       <div class="txn-meta">
-        ${inc
-          ?`<span class="cat-badge" style="background:rgba(34,197,94,.12);color:var(--green)">Income</span>`
-          :(b?`<span class="cat-badge" style="background:${color}1a;color:${color}">${manual?'<span class="overridden-dot"></span>':''}${esc(b.name)}</span>`:'')
-        }
+        ${catBadge}
         ${acctLbl?`<span class="account-badge">${esc(acctLbl)}</span>`:''}
         ${t.pending?'<span style="font-size:9px;color:var(--muted)">pending</span>':''}
       </div>
@@ -899,22 +1108,6 @@ function deleteBucket(id){
   saveOverrides();saveBuckets();renderBucketsTab();render();
 }
 
-/* Budget inline edit */
-function editBudget(bid){
-  const b=getBucket(bid),el=qs(`#bdg-${bid}`);
-  if(!b||!el)return;
-  el.outerHTML=`<input class="budget-input" id="bi-${bid}" type="number" min="0" step="1" value="${b.budget}"
-    onblur="commitBudget('${bid}')"
-    onkeydown="if(event.key==='Enter')this.blur();if(event.key==='Escape'){event.preventDefault();render();}">` ;
-  setTimeout(()=>{const inp=qs(`#bi-${bid}`);if(inp){inp.focus();inp.select();}},10);
-}
-function commitBudget(bid){
-  const inp=qs(`#bi-${bid}`);if(!inp)return;
-  const v=parseFloat(inp.value),b=getBucket(bid);
-  if(b&&!isNaN(v)&&v>=0){b.budget=v;saveBuckets();}
-  render();
-}
-
 /* Category modal */
 function openModal(txnId){
   const t=transactions.find(t=>t.transaction_id===txnId);
@@ -942,6 +1135,7 @@ function handleDisconnect(){
 function clearAuth(){
   ['plaid_access_token','plaid_cursor','cached_txns','last_synced','cached_accounts'].forEach(k=>localStorage.removeItem(k));
   accessToken=null;cursor=null;transactions=[];accounts=[];lastSynced=null;isDemoMode=false;
+  activeBucketId=null;
 }
 
 /* Loading */
