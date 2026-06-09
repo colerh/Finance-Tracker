@@ -523,7 +523,6 @@
   <div class="load-card"><div class="spinner"></div><span id="load-text">Loading…</span></div>
 </div>
 
-<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 <script>
 const BUCKET_DEFAULTS=[
   {id:'food',         name:'Food & Dining',    icon:'🍔',color:'#f97316',budget:500},
@@ -626,10 +625,10 @@ function loadStorage(){
   const rawB=localStorage.getItem('buckets');
   if(rawB){try{buckets=JSON.parse(rawB)}catch{buckets=BUCKET_DEFAULTS.map(b=>({...b}))}}
   else{
-    const saved=JSON.parse(localStorage.getItem('bucket_settings')||'{}');
+    let saved={};try{saved=JSON.parse(localStorage.getItem('bucket_settings')||'{}');}catch{}
     buckets=BUCKET_DEFAULTS.map(b=>({...b,budget:saved[b.id]?.budget??b.budget,name:saved[b.id]?.name??b.name}));
   }
-  overrides=JSON.parse(localStorage.getItem('cat_overrides')||'{}');
+  try{overrides=JSON.parse(localStorage.getItem('cat_overrides')||'{}');}catch{overrides={};}
   const rawS=localStorage.getItem('last_synced');
   lastSynced=rawS?new Date(rawS):null;
   try{const rawT=localStorage.getItem('cached_txns');if(rawT)transactions=JSON.parse(rawT);}catch{}
@@ -849,8 +848,7 @@ function renderTotalCard(spend){
   </div>
 </div>
 <div class="seg-bar-track">${segs||'<div style="flex:1;opacity:0"></div>'}</div>
-${legend?`<div class="seg-legend">${legend}</div>`:''}``;
-}
+${legend?`<div class="seg-legend">${legend}</div>`:''}`;}
 
 /* Bucket cards */
 function renderBuckets(spend){
@@ -962,8 +960,7 @@ function renderBucketDetail(){
 ${filtered.length
   ? groupsHtml
   : '<div class="empty-state"><div class="empty-icon">✨</div><div class="empty-text">No transactions for this period</div></div>'
-}``;
-}
+}`;}
 
 /* Transactions tab */
 function renderTransactionsTab(){
@@ -1007,8 +1004,7 @@ function txnRowFull(t,hideCategory=false){
     </div>
   </div>
   <div class="txn-right"><div class="txn-amount ${inc?'credit':'debit'}">${inc?'+':'-'}$${Math.abs(t.amount).toFixed(2)}</div></div>
-</div>`;
-}
+</div>`;}
 
 /* Income tab */
 function renderIncomeTab(){
@@ -1062,8 +1058,7 @@ function incomeRow(t){
     </div>
   </div>
   <div class="txn-right"><div class="txn-amount credit">+$${Math.abs(t.amount).toFixed(2)}</div></div>
-</div>`;
-}
+</div>`;}
 
 /* Buckets settings */
 function renderBucketsTab(){
@@ -1167,5 +1162,6 @@ function fmtTime(d){
   if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(console.warn);
 })();
 </script>
+<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js" async></script>
 </body>
 </html>
