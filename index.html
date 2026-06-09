@@ -649,7 +649,7 @@ let buckets=[],transactions=[],accounts=[],overrides={},
     isDemoMode=false,activeTxnId=null,pendingBid=null,
     txnFilter='month',viewMonthOffset=0,
     activeBucketId=null,bucketDetailYear=0,bucketDetailMonth=0,
-    pendingSplits=[],isSplitMode=false;
+    pendingSplits=[],isSplitMode=false,lastSyncDetail='';
 
 /* Storage */
 function loadStorage(){
@@ -802,12 +802,16 @@ async function sync(){
     const removedIds=new Set((removed||[]).map(t=>t.transaction_id));
     transactions=transactions.filter(t=>!removedIds.has(t.transaction_id));
     (modified||[]).forEach(u=>{const i=transactions.findIndex(t=>t.transaction_id===u.transaction_id);if(i>=0)transactions[i]=u;else transactions.push(u);});
+    const addedIds=new Set((added||[]).map(t=>t.transaction_id));
+    transactions=transactions.filter(t=>!addedIds.has(t.transaction_id));
     transactions.push(...(added||[]));
     cursor=next_cursor;
     if(cursor)localStorage.setItem('plaid_cursor',cursor);
     if(accts?.length){accounts=accts;cacheAccounts();}
     lastSynced=new Date();
     localStorage.setItem('last_synced',lastSynced.toISOString());
+    const newCount=(added||[]).length;
+    lastSyncDetail=newCount>0?` · ${newCount} new`:'· up to date';
     cacheTxns();render();
   }catch(err){
     console.error('sync:',err);
@@ -831,7 +835,7 @@ function render(){
   qs('#total-amount').textContent='$'+total.toFixed(2);
   qs('#total-amount').style.color=pct>=1?'var(--red)':pct>=.8?'var(--yellow)':'var(--text)';
   qs('#total-sub').textContent=`of $${budget.toFixed(2)} budgeted`;
-  qs('#sync-info').textContent=isDemoMode?'📊 Demo mode':lastSynced?'Synced '+fmtTime(lastSynced):'Never synced';
+  qs('#sync-info').textContent=isDemoMode?'📊 Demo mode':lastSynced?'Synced '+fmtTime(lastSynced)+lastSyncDetail:'Never synced';
   const linked=!!(accessToken&&!isDemoMode);
   show('#sync-btn',linked);show('#disconnect-btn',linked);show('#connect-btn',!linked);show('#demo-banner',isDemoMode);
   const hasData=transactions.length>0||isDemoMode||accessToken;
