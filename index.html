@@ -961,9 +961,9 @@ function renderBucketDetail(){
   if(!dataYears.includes(bucketDetailYear))bucketDetailYear=now.getFullYear();
 
   // Filter
-  let filtered=allBucketTxns.filter(t=>t.date?.startsWith(String(bucketDetailYear)));
-  if(bucketDetailMonth>0)filtered=filtered.filter(t=>+t.date?.slice(5,7)===bucketDetailMonth);
-  filtered.sort((a,b)=>b.date.localeCompare(a.date));
+  let filtered=allBucketTxns.filter(t=>txnDate(t)?.startsWith(String(bucketDetailYear)));
+  if(bucketDetailMonth>0)filtered=filtered.filter(t=>+txnDate(t)?.slice(5,7)===bucketDetailMonth);
+  filtered.sort((a,b)=>txnDate(b).localeCompare(txnDate(a)));
 
   const total=filtered.reduce((s,t)=>{
     const o=overrides[t.transaction_id];
@@ -981,7 +981,7 @@ function renderBucketDetail(){
 
   // Group by date
   const groups={};
-  filtered.forEach(t=>{(groups[t.date]=groups[t.date]||[]).push(t);});
+  filtered.forEach(t=>{(groups[txnDate(t)]=groups[txnDate(t)]||[]).push(t);});
   const groupsHtml=Object.keys(groups).sort((a,b)=>b.localeCompare(a))
     .map(date=>`<div class="date-group"><div class="date-header">${fmtDate(date)}</div>${groups[date].map(t=>{
       const o=overrides[t.transaction_id];
@@ -1029,13 +1029,13 @@ ${filtered.length
 function renderTransactionsTab(){
   const container=qs('#txn-tab-content');if(!container)return;
   const source=txnFilter==='month'?currentMonthTxns():[...transactions];
-  const visible=source.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const visible=source.slice().sort((a,b)=>txnDate(b).localeCompare(txnDate(a)));
   if(!visible.length){
     container.innerHTML='<div class="empty-state"><div class="empty-icon">💭</div><div class="empty-text">No transactions found</div></div>';
     return;
   }
   const groups={};
-  visible.forEach(t=>{(groups[t.date]=groups[t.date]||[]).push(t);});
+  visible.forEach(t=>{(groups[txnDate(t)]=groups[txnDate(t)]||[]).push(t);});
   container.innerHTML=Object.keys(groups).sort((a,b)=>b.localeCompare(a))
     .map(date=>`<div class="date-group"><div class="date-header">${fmtDate(date)}</div>${groups[date].map(t=>txnRowFull(t)).join('')}</div>`).join('');
 }
@@ -1095,7 +1095,7 @@ function renderIncomeTab(){
     return;
   }
   const groups={};
-  incomeTxns.forEach(t=>{const mo=t.date?.slice(0,7)||'';(groups[mo]=groups[mo]||[]).push(t);});
+  incomeTxns.forEach(t=>{const mo=txnDate(t)?.slice(0,7)||'';(groups[mo]=groups[mo]||[]).push(t);});
   const groupsHtml=Object.keys(groups).sort((a,b)=>b.localeCompare(a)).map(mo=>{
     const moTotal=groups[mo].reduce((s,t)=>s+Math.abs(t.amount),0);
     const[y,m]=mo.split('-');
@@ -1183,7 +1183,7 @@ function openModal(txnId){
     isSplitMode=false;pendingSplits=[];pendingBid=getBucketId(t)||buckets[0]?.id;
   }
   qs('#modal-merchant').textContent=t.merchant_name||t.name||'Unknown';
-  qs('#modal-sub').textContent=`-$${t.amount.toFixed(2)} · ${fmtDate(t.date)}`;
+  qs('#modal-sub').textContent=`-$${t.amount.toFixed(2)} · ${fmtDate(txnDate(t))}`;
   qs('#modal-single-btn').classList.toggle('active',!isSplitMode);
   qs('#modal-split-btn').classList.toggle('active',isSplitMode);
   qs('#modal-single-view').style.display=isSplitMode?'none':'';
@@ -1284,6 +1284,7 @@ function hideLoad(){qs('#load-overlay').classList.remove('on');}
 const qs=sel=>document.querySelector(sel);
 function show(sel,visible){const el=qs(sel);if(el)el.style.display=visible?'':'none';}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function txnDate(t){return t.authorized_date||t.date;}
 function fmtDate(str){
   const[y,m,d]=str.split('-').map(Number),date=new Date(y,m-1,d),today=new Date();
   const yest=new Date(today);yest.setDate(yest.getDate()-1);
