@@ -606,7 +606,7 @@ const PFC_MAP={
   'HOME_IMPROVEMENT':         ()=>'housing',
   'RENT_AND_UTILITIES':       p=>(p.detailed||'').includes('RENT')?'housing':'utilities',
   'MEDICAL':                  ()=>'health','PERSONAL_CARE':()=>'health','UTILITIES':()=>'utilities',
-  'LOAN_PAYMENTS':            ()=>'misc','BANK_FEES':()=>'misc','GENERAL_SERVICES':()=>'misc',
+  'LOAN_PAYMENTS':            ()=>null,'BANK_FEES':()=>'misc','GENERAL_SERVICES':()=>'misc',
   'GOVERNMENT_AND_NON_PROFIT':()=>'misc','INCOME':()=>null,'TRANSFER_IN':()=>null,'TRANSFER_OUT':()=>'misc',
 };
 
@@ -733,7 +733,7 @@ function viewMonthPrefix(){
   const d=new Date(now.getFullYear(),now.getMonth()+viewMonthOffset,1);
   return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
 }
-function viewMonthTxns(){return transactions.filter(t=>t.date?.startsWith(viewMonthPrefix()));}
+function viewMonthTxns(){return transactions.filter(t=>txnDate(t)?.startsWith(viewMonthPrefix()));}
 function viewSpendByBucket(){
   const out={};
   buckets.forEach(b=>{out[b.id]=0;});
@@ -954,10 +954,10 @@ function renderBuckets(spend){
 
 /* Bucket detail */
 function openBucketDetail(bid){
-  const now=new Date();
+  const vmp=viewMonthPrefix();
   activeBucketId=bid;
-  bucketDetailYear=now.getFullYear();
-  bucketDetailMonth=now.getMonth()+1;
+  bucketDetailYear=+vmp.slice(0,4);
+  bucketDetailMonth=+vmp.slice(5,7);
   renderOverviewTab();
 }
 function closeBucketDetail(){activeBucketId=null;renderOverviewTab();}
@@ -1113,7 +1113,6 @@ function renderIncomeTab(){
   }).join('');
   container.innerHTML=hero+groupsHtml;
 }
-
 function incomeRow(t){
   const merchant=t.merchant_name||t.name||'Deposit';
   const acctLbl=accountLabel(t);
