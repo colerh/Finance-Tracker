@@ -393,6 +393,12 @@
     .split-remaining.over{color:var(--red)}
     .split-badge{background:rgba(99,102,241,.12);color:var(--accent)}
 
+    /* Your-share adjuster */
+    .share-adjust{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+    .share-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px}
+    .share-hint-text{font-weight:400;text-transform:none;letter-spacing:0;opacity:.7}
+    .share-input-row{display:flex;align-items:center;gap:10px;margin-top:6px}
+
     /* Responsive */
     @media(max-width:680px){
       .app-header{padding:12px 16px}
@@ -537,6 +543,17 @@
     </div>
     <div id="modal-single-view">
       <div class="picker-grid" id="picker-grid"></div>
+      <div class="share-adjust">
+        <div class="share-label">Your share <span class="share-hint-text">— reduce if friends paid you back</span></div>
+        <div class="share-input-row">
+          <div class="split-amt-wrap">
+            <span style="color:var(--muted);font-family:var(--num-font);font-size:12px">$</span>
+            <input class="split-amt-inp" type="number" id="share-amount-inp" min="0" step="0.01"
+              oninput="onShareInput()">
+          </div>
+          <button class="btn btn-ghost btn-sm" id="share-clear-btn" onclick="clearNetAmount()" style="display:none">× Clear</button>
+        </div>
+      </div>
     </div>
     <div id="modal-split-view" style="display:none">
       <div class="split-rows" id="split-rows"></div>
@@ -601,7 +618,6 @@ function makeDemoTxns(){
   const py=prevDate.getFullYear(),pmo=String(prevDate.getMonth()+1).padStart(2,'0');
   const pd=n=>`${py}-${pmo}-${String(n).padStart(2,'0')}`;
   return [
-    // Current month
     {transaction_id:'i01',merchant_name:'Direct Deposit',   amount:-4500.00,date:d(1), pending:false,account_id:'acc01',category:['Payroll'],personal_finance_category:{primary:'INCOME',detailed:'INCOME_WAGES'}},
     {transaction_id:'i02',merchant_name:'Freelance Payment',amount:-850.00, date:d(12),pending:false,account_id:'acc01',category:['Payroll'],personal_finance_category:{primary:'INCOME',detailed:'INCOME_OTHER_INCOME'}},
     {transaction_id:'d01',merchant_name:'Rent Payment',      amount:1500.00,date:d(1), pending:false,account_id:'acc01',category:['Payment']},
@@ -624,7 +640,6 @@ function makeDemoTxns(){
     {transaction_id:'d18',merchant_name:'AMC Theaters',       amount:22.50,  date:d(17),pending:false,account_id:'acc02',category:['Recreation']},
     {transaction_id:'d19',merchant_name:'Walgreens',          amount:18.35,  date:d(18),pending:false,account_id:'acc02',category:['Healthcare']},
     {transaction_id:'d20',merchant_name:'Delta Airlines',     amount:289.00, date:d(19),pending:true, account_id:'acc02',category:['Travel']},
-    // Previous month
     {transaction_id:'p01',merchant_name:'Direct Deposit',    amount:-4500.00,date:pd(1), pending:false,account_id:'acc01',category:['Payroll'],personal_finance_category:{primary:'INCOME',detailed:'INCOME_WAGES'}},
     {transaction_id:'p02',merchant_name:'Rent Payment',       amount:1500.00, date:pd(1), pending:false,account_id:'acc01',category:['Payment']},
     {transaction_id:'p03',merchant_name:'Con Edison',          amount:88.10,   date:pd(3), pending:false,account_id:'acc01',category:['Utilities']},
@@ -649,7 +664,7 @@ let buckets=[],transactions=[],accounts=[],overrides={},
     isDemoMode=false,activeTxnId=null,pendingBid=null,
     txnFilter='month',viewMonthOffset=0,
     activeBucketId=null,bucketDetailYear=0,bucketDetailMonth=0,
-    pendingSplits=[],isSplitMode=false,lastSyncDetail='';
+    pendingSplits=[],isSplitMode=false,lastSyncDetail='',pendingNetAmount=null;
 
 /* Storage */
 function loadStorage(){
@@ -673,11 +688,24 @@ function cacheTxns(){localStorage.setItem('cached_txns',JSON.stringify(transacti
 function cacheAccounts(){localStorage.setItem('cached_accounts',JSON.stringify(accounts))}
 
 /* Category helpers */
-function isIncome(t){return t.amount<0}
+function isIncome(t){
+  if(t.amount>=0)return false;
+  const pfc=t.personal_finance_category?.primary;
+  if(pfc){
+    // Credit card payments and outbound transfers are not income
+    if(pfc==='LOAN_PAYMENTS'||pfc==='TRANSFER_OUT')return false;
+    return true;
+  }
+  // Fall back to old-style categories
+  const cat=t.category?.[0];
+  if(cat==='Transfer'||cat==='Payment'||cat==='Bank Fees')return false;
+  return true;
+}
 function getBucketId(txn){
   if(isIncome(txn))return null;
   const o=overrides[txn.transaction_id];
   if(Array.isArray(o))return o[0]?.bucket||null;
+  if(o&&typeof o==='object')return o.bucket||null;
   if(o&&getBucket(o))return o;
   const pfc=txn.personal_finance_category;
   if(pfc?.primary){const fn=PFC_MAP[pfc.primary];if(fn){const r=fn(pfc);if(r===null)return null;if(r&&getBucket(r))return r;}}
@@ -691,6 +719,7 @@ function getTransactionContributions(t){
   if(isIncome(t))return[];
   const o=overrides[t.transaction_id];
   if(Array.isArray(o))return o.filter(s=>getBucket(s.bucket)).map(s=>({bucketId:s.bucket,amount:s.amount}));
+  if(o&&typeof o==='object'&&!Array.isArray(o)){const bid=o.bucket;if(!bid||!getBucket(bid))return[];return[{bucketId:bid,amount:o.net??t.amount}];}
   const bid=getBucketId(t);
   if(bid===null)return[];
   return[{bucketId:bid,amount:t.amount}];
@@ -698,7 +727,7 @@ function getTransactionContributions(t){
 function monthPrefix(){const n=new Date();return`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`}
 function currentMonthTxns(){return transactions.filter(t=>t.date?.startsWith(monthPrefix()))}
 
-/* View-month helpers (overview month nav) */
+/* View-month helpers */
 function viewMonthPrefix(){
   const now=new Date();
   const d=new Date(now.getFullYear(),now.getMonth()+viewMonthOffset,1);
@@ -931,10 +960,7 @@ function openBucketDetail(bid){
   bucketDetailMonth=now.getMonth()+1;
   renderOverviewTab();
 }
-function closeBucketDetail(){
-  activeBucketId=null;
-  renderOverviewTab();
-}
+function closeBucketDetail(){activeBucketId=null;renderOverviewTab();}
 function setBucketDetailYear(v){bucketDetailYear=+v;renderBucketDetail();}
 function setBucketDetailMonth(v){bucketDetailMonth=+v;renderBucketDetail();}
 
@@ -943,7 +969,6 @@ function renderBucketDetail(){
   const b=getBucket(activeBucketId);
   if(!b){closeBucketDetail();return;}
 
-  // All transactions for this bucket (all time) — include split transactions that have a line for this bucket
   const allBucketTxns=transactions.filter(t=>{
     if(isIncome(t))return false;
     const o=overrides[t.transaction_id];
@@ -951,16 +976,12 @@ function renderBucketDetail(){
     return getBucketId(t)===activeBucketId;
   });
 
-  // Available years from data (plus current year always)
   const now=new Date();
   const dataYears=[...new Set(allBucketTxns.map(t=>t.date?.slice(0,4)).filter(Boolean))].map(Number);
   if(!dataYears.includes(now.getFullYear()))dataYears.push(now.getFullYear());
   dataYears.sort((a,z)=>z-a);
-
-  // If saved year not in list, reset to current
   if(!dataYears.includes(bucketDetailYear))bucketDetailYear=now.getFullYear();
 
-  // Filter
   let filtered=allBucketTxns.filter(t=>txnDate(t)?.startsWith(String(bucketDetailYear)));
   if(bucketDetailMonth>0)filtered=filtered.filter(t=>+txnDate(t)?.slice(5,7)===bucketDetailMonth);
   filtered.sort((a,b)=>txnDate(b).localeCompare(txnDate(a)));
@@ -968,62 +989,44 @@ function renderBucketDetail(){
   const total=filtered.reduce((s,t)=>{
     const o=overrides[t.transaction_id];
     if(Array.isArray(o)){const sp=o.find(s=>s.bucket===activeBucketId);return s+(sp?sp.amount:0);}
+    if(o&&typeof o==='object'&&o.net!=null)return s+o.net;
     return s+t.amount;
   },0);
 
-  // Year options
   const yearOpts=dataYears.map(y=>`<option value="${y}"${y===bucketDetailYear?' selected':''}>${y}</option>`).join('');
-
-  // Month options
   const MONTHS=['All Months','January','February','March','April','May','June',
     'July','August','September','October','November','December'];
   const monthOpts=MONTHS.map((m,i)=>`<option value="${i}"${i===bucketDetailMonth?' selected':''}>${m}</option>`).join('');
 
-  // Group by date
   const groups={};
   filtered.forEach(t=>{(groups[txnDate(t)]=groups[txnDate(t)]||[]).push(t);});
   const groupsHtml=Object.keys(groups).sort((a,b)=>b.localeCompare(a))
     .map(date=>`<div class="date-group"><div class="date-header">${fmtDate(date)}</div>${groups[date].map(t=>{
       const o=overrides[t.transaction_id];
-      const displayAmt=Array.isArray(o)?(o.find(s=>s.bucket===activeBucketId)?.amount??null):null;
+      const displayAmt=Array.isArray(o)
+        ?(o.find(s=>s.bucket===activeBucketId)?.amount??null)
+        :(o&&typeof o==='object'&&o.net!=null?o.net:null);
       return txnRowFull(t,true,displayAmt);
-    }).join('')}</div>`)
-    .join('');
+    }).join('')}</div>`).join('');
 
-  const periodLabel=bucketDetailMonth>0
-    ?`${MONTHS[bucketDetailMonth]} ${bucketDetailYear}`
-    :`All of ${bucketDetailYear}`;
+  const periodLabel=bucketDetailMonth>0?`${MONTHS[bucketDetailMonth]} ${bucketDetailYear}`:`All of ${bucketDetailYear}`;
 
   container.innerHTML=`
 <div class="bucket-detail-header">
   <button class="btn btn-ghost btn-sm" onclick="closeBucketDetail()">← Back</button>
-  <div class="bucket-detail-title">
-    <span>${b.icon}</span><span>${esc(b.name)}</span>
-  </div>
+  <div class="bucket-detail-title"><span>${b.icon}</span><span>${esc(b.name)}</span></div>
 </div>
 <div class="bucket-detail-summary" style="border-left:3px solid ${b.color}">
-  <div class="bds-block">
-    <div class="bds-label">Total Spent</div>
-    <div class="bds-amount" style="color:${b.color}">$${total.toFixed(2)}</div>
-  </div>
-  <div class="bds-block">
-    <div class="bds-label">Transactions</div>
-    <div class="bds-amount" style="color:var(--text)">${filtered.length}</div>
-  </div>
-  <div class="bds-block">
-    <div class="bds-label">Period</div>
-    <div class="bds-count" style="font-size:13px;color:var(--text)">${periodLabel}</div>
-  </div>
+  <div class="bds-block"><div class="bds-label">Total Spent</div><div class="bds-amount" style="color:${b.color}">$${total.toFixed(2)}</div></div>
+  <div class="bds-block"><div class="bds-label">Transactions</div><div class="bds-amount" style="color:var(--text)">${filtered.length}</div></div>
+  <div class="bds-block"><div class="bds-label">Period</div><div class="bds-count" style="font-size:13px;color:var(--text)">${periodLabel}</div></div>
 </div>
 <div class="bucket-detail-filters">
   <span class="filters-label">Filter:</span>
   <select class="detail-select" onchange="setBucketDetailYear(this.value)">${yearOpts}</select>
   <select class="detail-select" onchange="setBucketDetailMonth(this.value)">${monthOpts}</select>
 </div>
-${filtered.length
-  ? groupsHtml
-  : '<div class="empty-state"><div class="empty-icon">✨</div><div class="empty-text">No transactions for this period</div></div>'
-}`;}
+${filtered.length?groupsHtml:'<div class="empty-state"><div class="empty-icon">✨</div><div class="empty-text">No transactions for this period</div></div>'}`;}
 
 /* Transactions tab */
 function renderTransactionsTab(){
@@ -1042,20 +1045,22 @@ function renderTransactionsTab(){
 
 function txnRowFull(t,hideCategory=false,displayAmount=null){
   const inc=isIncome(t);
-  const isSplit=!inc&&Array.isArray(overrides[t.transaction_id]);
+  const o=overrides[t.transaction_id];
+  const isSplit=!inc&&Array.isArray(o);
+  const isAdjusted=!inc&&o&&typeof o==='object'&&!Array.isArray(o)&&o.net!=null;
   const bid=inc?null:(getBucketId(t)||buckets[buckets.length-1]?.id);
   const b=bid?getBucket(bid):null;
   const color=b?.color||'#64748b';
   const icon=inc?'💰':(b?.icon||'📦');
   const merchant=t.merchant_name||t.name||'Unknown';
   const acctLbl=accountLabel(t);
-  const manual=!inc&&!isSplit&&bid&&!!overrides[t.transaction_id];
+  const manual=!inc&&!isSplit&&!isAdjusted&&bid&&!!overrides[t.transaction_id];
   const onclick=inc?'':`onclick="openModal('${esc(t.transaction_id)}')"`;
   let catBadge='';
   if(inc)catBadge=`<span class="cat-badge" style="background:rgba(34,197,94,.12);color:var(--green)">Income</span>`;
   else if(isSplit&&!hideCategory)catBadge=`<span class="cat-badge split-badge">✂ Split</span>`;
-  else if(b&&!hideCategory)catBadge=`<span class="cat-badge" style="background:${color}1a;color:${color}">${manual?'<span class="overridden-dot"></span>':''}${esc(b.name)}</span>`;
-  const showAmt=displayAmount!==null?displayAmount:Math.abs(t.amount);
+  else if(b&&!hideCategory)catBadge=`<span class="cat-badge" style="background:${color}1a;color:${color}">${(manual||isAdjusted)?'<span class="overridden-dot"></span>':''}${esc(b.name)}</span>`;
+  const showAmt=displayAmount!==null?displayAmount:(isAdjusted?o.net:Math.abs(t.amount));
   const amtClass=displayAmount!==null?'debit':(inc?'credit':'debit');
   const amtSign=displayAmount!==null?'-':(inc?'+':'-');
   return `
@@ -1078,7 +1083,7 @@ function txnRowFull(t,hideCategory=false,displayAmount=null){
 function renderIncomeTab(){
   const container=qs('#income-content');if(!container)return;
   const pfx=monthPrefix();
-  const incomeTxns=transactions.filter(t=>isIncome(t)).sort((a,b)=>b.date.localeCompare(a.date));
+  const incomeTxns=transactions.filter(t=>isIncome(t)).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   const thisMonth=incomeTxns.filter(t=>t.date?.startsWith(pfx));
   const thisMonthTotal=thisMonth.reduce((s,t)=>s+Math.abs(t.amount),0);
   const now=new Date();
@@ -1176,9 +1181,14 @@ function openModal(txnId){
   const t=transactions.find(t=>t.transaction_id===txnId);
   if(!t||isIncome(t))return;
   activeTxnId=txnId;
+  pendingNetAmount=null;
   const existingOverride=overrides[txnId];
   if(Array.isArray(existingOverride)){
     isSplitMode=true;pendingSplits=existingOverride.map(s=>({...s}));pendingBid=null;
+  } else if(existingOverride&&typeof existingOverride==='object'){
+    isSplitMode=false;pendingSplits=[];
+    pendingBid=existingOverride.bucket||getBucketId(t)||buckets[0]?.id;
+    pendingNetAmount=existingOverride.net??null;
   } else {
     isSplitMode=false;pendingSplits=[];pendingBid=getBucketId(t)||buckets[0]?.id;
   }
@@ -1188,7 +1198,7 @@ function openModal(txnId){
   qs('#modal-split-btn').classList.toggle('active',isSplitMode);
   qs('#modal-single-view').style.display=isSplitMode?'none':'';
   qs('#modal-split-view').style.display=isSplitMode?'':'none';
-  if(isSplitMode)renderSplitRows();else renderPicker();
+  if(isSplitMode)renderSplitRows();else{renderPicker();updateShareInput();}
   qs('#cat-modal').classList.add('open');
 }
 function renderPicker(){
@@ -1197,6 +1207,25 @@ function renderPicker(){
       <span>${b.icon}</span><span>${esc(b.name)}</span></button>`).join('');
 }
 function pickBucket(bid){pendingBid=bid;renderPicker();}
+function updateShareInput(){
+  const t=transactions.find(t=>t.transaction_id===activeTxnId);
+  const inp=qs('#share-amount-inp');
+  const clearBtn=qs('#share-clear-btn');
+  if(!inp||!t)return;
+  inp.placeholder=t.amount.toFixed(2);
+  inp.value=pendingNetAmount!=null?pendingNetAmount:'';
+  if(clearBtn)clearBtn.style.display=pendingNetAmount!=null?'':'none';
+}
+function onShareInput(){
+  const inp=qs('#share-amount-inp');
+  const clearBtn=qs('#share-clear-btn');
+  if(clearBtn)clearBtn.style.display=(inp&&inp.value)?'':'none';
+}
+function clearNetAmount(){
+  pendingNetAmount=null;
+  const inp=qs('#share-amount-inp');if(inp)inp.value='';
+  const clearBtn=qs('#share-clear-btn');if(clearBtn)clearBtn.style.display='none';
+}
 function setModalMode(mode){
   isSplitMode=mode==='split';
   qs('#modal-single-btn').classList.toggle('active',!isSplitMode);
@@ -1213,6 +1242,8 @@ function setModalMode(mode){
       ];
     }
     renderSplitRows();
+  } else {
+    renderPicker();updateShareInput();
   }
 }
 function renderSplitRows(){
@@ -1258,11 +1289,16 @@ function applyOverride(){
     }
     overrides[activeTxnId]=validSplits;
   } else {
-    if(activeTxnId&&pendingBid)overrides[activeTxnId]=pendingBid;
+    if(activeTxnId&&pendingBid){
+      const shareInp=qs('#share-amount-inp');
+      const shareVal=shareInp?parseFloat(shareInp.value):NaN;
+      const net=!isNaN(shareVal)&&shareVal>0?shareVal:null;
+      overrides[activeTxnId]=net!=null?{bucket:pendingBid,net}:pendingBid;
+    }
   }
   saveOverrides();closeModal();render();
 }
-function closeModal(){qs('#cat-modal').classList.remove('open');activeTxnId=null;pendingBid=null;pendingSplits=[];isSplitMode=false;}
+function closeModal(){qs('#cat-modal').classList.remove('open');activeTxnId=null;pendingBid=null;pendingSplits=[];isSplitMode=false;pendingNetAmount=null;}
 function onOverlayClick(e){if(e.target===qs('#cat-modal'))closeModal();}
 
 /* Disconnect */
