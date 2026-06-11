@@ -125,14 +125,15 @@
     }
     .total-agg-top{
       display:flex;align-items:center;justify-content:space-between;
-      gap:16px;flex-wrap:wrap;margin-bottom:0;
+      gap:12px;flex-wrap:wrap;margin-bottom:16px;
     }
     .total-agg-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
-    .total-agg-month{font-size:16px;font-weight:600}
-    .total-agg-hero{margin:18px 0 22px;font-family:var(--num-font);font-variant-numeric:tabular-nums}
-    .total-agg-spent{display:block;font-size:56px;font-weight:800;line-height:1;letter-spacing:-2px}
-    .total-agg-subrow{display:flex;align-items:center;gap:12px;margin-top:8px}
+    .total-agg-month{font-size:15px;font-weight:600}
+    .total-agg-hero{margin:0 0 20px;font-family:var(--num-font);font-variant-numeric:tabular-nums}
+    .total-agg-spent{display:block;font-size:72px;font-weight:800;line-height:1;letter-spacing:-3px}
+    .total-agg-subrow{display:flex;align-items:center;gap:10px;margin-top:10px}
     .total-agg-of{font-size:15px;color:var(--muted)}
+    .total-agg-divider{color:var(--border);font-size:14px}
     .total-agg-pct{font-size:15px;font-weight:700}
     .seg-bar-track{
       height:12px;background:rgba(255,255,255,.06);
@@ -184,6 +185,9 @@
     .remain-amount{font-family:var(--num-font);font-variant-numeric:tabular-nums;font-size:16px;font-weight:700;text-align:right}
     .remain-amount.over{color:var(--red)}
     .remain-amount.ok{color:var(--green)}
+    .bucket-card.excluded{opacity:.8;border-style:dashed}
+    .excl-badge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);border:1px solid var(--border);border-radius:4px;padding:2px 7px}
+    .excluded-note{font-size:11px;color:var(--muted);margin:14px 0 18px;font-style:italic}
 
     /* Bucket detail view */
     .bucket-detail-header{
@@ -309,7 +313,7 @@
     /* Bucket settings tab */
     .bucket-settings-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
     .bucket-setting-row{
-      display:grid;grid-template-columns:46px 1fr 130px 38px 34px;
+      display:grid;grid-template-columns:46px 1fr 130px 38px auto 34px;
       align-items:center;gap:10px;
       background:var(--card);border:1px solid var(--border);
       border-radius:var(--radius-sm);padding:10px 14px;transition:border-color .15s;
@@ -359,6 +363,8 @@
       transition:color .15s,border-color .15s,background .15s;
     }
     .delete-btn:hover{color:var(--red);border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.05)}
+    .excl-toggle{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;user-select:none}
+    .excl-toggle input{width:14px;height:14px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
     .add-bucket-btn{
       display:flex;align-items:center;justify-content:center;gap:8px;
       width:100%;padding:14px;
@@ -410,14 +416,15 @@
       .buckets-grid{grid-template-columns:1fr}
       .picker-grid{grid-template-columns:1fr}
       .connect-card{padding:32px 22px}
-      .bucket-setting-row{grid-template-columns:40px 1fr 100px 34px 30px;gap:7px;padding:8px 10px}
-      .total-agg-spent{font-size:22px}
+      .bucket-setting-row{grid-template-columns:40px 1fr 100px 34px auto 30px;gap:7px;padding:8px 10px}
+      .total-agg-spent{font-size:48px;letter-spacing:-2px}
       .income-hero-amount{font-size:26px}
       .bds-amount{font-size:20px}
     }
     @media(max-width:440px){
       .header-right .sync-info{display:none}
-      .bucket-setting-row{grid-template-columns:36px 1fr 88px 30px 26px;gap:5px}
+      .bucket-setting-row{grid-template-columns:36px 1fr 88px 30px auto 26px;gap:5px}
+      .excl-toggle span{display:none}
     }
   </style>
 </head>
@@ -903,28 +910,30 @@ function renderTotalCard(spend){
   const[vy,vm]=vpfx.split('-').map(Number);
   const viewDate=new Date(vy,vm-1,1);
   const monthLabel=viewDate.toLocaleString('default',{month:'long',year:'numeric'});
-  const totalBudget=buckets.reduce((s,b)=>s+b.budget,0);
-  const totalSpend=Object.values(spend).reduce((s,v)=>s+v,0);
+  const tracked=buckets.filter(b=>!b.excludeFromBudget);
+  const totalBudget=tracked.reduce((s,b)=>s+b.budget,0);
+  const totalSpend=tracked.reduce((s,b)=>s+(spend[b.id]||0),0);
   const pct=totalBudget>0?(totalSpend/totalBudget)*100:0;
   const pctColor=pct>=100?'var(--red)':pct>=80?'var(--yellow)':'var(--green)';
   const scale=totalBudget>0?100/Math.max(totalBudget,totalSpend):0;
-  const segs=buckets.filter(b=>(spend[b.id]||0)>0)
+  const segs=tracked.filter(b=>(spend[b.id]||0)>0)
     .map(b=>`<div style="width:${((spend[b.id]||0)*scale).toFixed(2)}%;background:${b.color}" title="${esc(b.name)}: $${(spend[b.id]||0).toFixed(2)}"></div>`).join('');
-  const legend=buckets.filter(b=>(spend[b.id]||0)>0)
+  const legend=tracked.filter(b=>(spend[b.id]||0)>0)
     .map(b=>`<div class="seg-item"><div class="seg-dot" style="background:${b.color}"></div><span>${b.icon} ${esc(b.name)} <strong style="color:var(--text)">$${(spend[b.id]||0).toFixed(0)}</strong></span></div>`).join('');
   card.innerHTML=`
 <div class="total-agg-top">
+  <div class="total-agg-label">Monthly Budget</div>
   <div class="month-nav">
     <button class="month-nav-btn" onclick="shiftMonth(-1)">‹</button>
     <span class="total-agg-month">${monthLabel}</span>
     <button class="month-nav-btn" onclick="shiftMonth(1)"${viewMonthOffset>=0?' disabled':''}>›</button>
   </div>
-  <div class="total-agg-label">Monthly Budget</div>
 </div>
 <div class="total-agg-hero">
   <span class="total-agg-spent" style="color:${pctColor}">$${totalSpend.toFixed(2)}</span>
   <div class="total-agg-subrow">
     <span class="total-agg-of">of $${totalBudget.toFixed(0)}</span>
+    <span class="total-agg-divider">·</span>
     <span class="total-agg-pct" style="color:${pctColor}">${pct.toFixed(0)}%</span>
   </div>
 </div>
@@ -934,7 +943,20 @@ ${legend?`<div class="seg-legend">${legend}</div>`:''}`;}
 /* Bucket cards */
 function renderBuckets(spend){
   qs('#buckets-grid').innerHTML=buckets.map(b=>{
-    const s=spend[b.id]||0,pct=b.budget>0?Math.min((s/b.budget)*100,100):0;
+    const s=spend[b.id]||0;
+    if(b.excludeFromBudget){
+      return `
+<div class="bucket-card excluded" onclick="openBucketDetail('${b.id}')">
+  <div class="bucket-head">
+    <div class="bucket-name-row"><span class="bucket-icon">${b.icon}</span><span class="bucket-name">${esc(b.name)}</span></div>
+    <div class="excl-badge">Untracked</div>
+  </div>
+  <div class="excluded-note">Not included in monthly budget</div>
+  <div class="bucket-foot">
+    <div><div class="spent-label">Spent This Month</div><div class="spent-amount" style="color:${b.color}">$${s.toFixed(2)}</div></div>
+  </div>
+</div>`;}
+    const pct=b.budget>0?Math.min((s/b.budget)*100,100):0;
     const bar=pct<60?'g':pct<85?'y':'r',rem=b.budget-s;
     return `
 <div class="bucket-card" onclick="openBucketDetail('${b.id}')">
@@ -1152,6 +1174,10 @@ function renderBucketsTab(){
   </div>
   <input type="color" class="color-swatch" value="${b.color}" title="Change color"
     oninput="updateBucket('${b.id}','color',this.value)">
+  <label class="excl-toggle" title="Exclude from monthly budget total">
+    <input type="checkbox" ${b.excludeFromBudget?'checked':''} onchange="updateBucket('${b.id}','excludeFromBudget',this.checked)">
+    <span>Excl.</span>
+  </label>
   <button class="delete-btn" onclick="deleteBucket('${b.id}')" title="Remove">×</button>
 </div>`).join('');
 }
