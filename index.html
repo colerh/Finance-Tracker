@@ -734,7 +734,7 @@ function getTransactionContributions(t){
   return[{bucketId:bid,amount:t.amount}];
 }
 function monthPrefix(){const n=new Date();return`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`}
-function currentMonthTxns(){return transactions.filter(t=>t.date?.startsWith(monthPrefix()))}
+function currentMonthTxns(){return transactions.filter(t=>txnDate(t)?.startsWith(monthPrefix()))}
 
 /* View-month helpers */
 function viewMonthPrefix(){
@@ -993,15 +993,12 @@ function renderBucketDetail(){
   const b=getBucket(activeBucketId);
   if(!b){closeBucketDetail();return;}
 
-  const allBucketTxns=transactions.filter(t=>{
-    if(isIncome(t))return false;
-    const o=overrides[t.transaction_id];
-    if(Array.isArray(o))return o.some(s=>s.bucket===activeBucketId);
-    return getBucketId(t)===activeBucketId;
-  });
+  const allBucketTxns=transactions.filter(t=>
+    getTransactionContributions(t).some(c=>c.bucketId===activeBucketId)
+  );
 
   const now=new Date();
-  const dataYears=[...new Set(allBucketTxns.map(t=>t.date?.slice(0,4)).filter(Boolean))].map(Number);
+  const dataYears=[...new Set(allBucketTxns.map(t=>txnDate(t)?.slice(0,4)).filter(Boolean))].map(Number);
   if(!dataYears.includes(now.getFullYear()))dataYears.push(now.getFullYear());
   dataYears.sort((a,z)=>z-a);
   if(!dataYears.includes(bucketDetailYear))bucketDetailYear=now.getFullYear();
@@ -1011,10 +1008,8 @@ function renderBucketDetail(){
   filtered.sort((a,b)=>txnDate(b).localeCompare(txnDate(a)));
 
   const total=filtered.reduce((s,t)=>{
-    const o=overrides[t.transaction_id];
-    if(Array.isArray(o)){const sp=o.find(s=>s.bucket===activeBucketId);return s+(sp?sp.amount:0);}
-    if(o&&typeof o==='object'&&o.net!=null)return s+o.net;
-    return s+t.amount;
+    const c=getTransactionContributions(t).find(c=>c.bucketId===activeBucketId);
+    return s+(c?c.amount:0);
   },0);
 
   const yearOpts=dataYears.map(y=>`<option value="${y}"${y===bucketDetailYear?' selected':''}>${y}</option>`).join('');
