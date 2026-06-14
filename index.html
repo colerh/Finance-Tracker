@@ -407,6 +407,29 @@
     .share-hint-text{font-weight:400;text-transform:none;letter-spacing:0;opacity:.7}
     .share-input-row{display:flex;align-items:center;gap:10px;margin-top:6px}
 
+    /* Sync result modal */
+    .sync-result-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:499}
+    .sync-result-modal{
+      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+      background:var(--card);border:1px solid var(--border);
+      border-radius:var(--radius);padding:26px 28px;
+      box-shadow:var(--shadow);z-index:500;
+      min-width:320px;max-width:480px;width:90%;
+    }
+    .sync-result-title{font-size:17px;font-weight:700;margin-bottom:4px}
+    .sync-result-counts{font-size:13px;color:var(--muted);margin-bottom:6px}
+    .sync-result-removals{border-top:1px solid var(--border);padding-top:16px;margin-top:14px}
+    .sync-removal-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px}
+    .sync-removal-row{
+      display:grid;grid-template-columns:1fr auto auto;
+      align-items:baseline;gap:10px;
+      padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);
+    }
+    .sync-removal-name{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .sync-removal-date{font-size:11px;color:var(--muted);white-space:nowrap}
+    .sync-removal-amt{font-family:var(--num-font);font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap}
+    .sync-removal-why{margin-top:12px;font-size:11px;color:var(--muted);line-height:1.6}
+
     /* Responsive */
     @media(max-width:680px){
       .app-header{padding:12px 16px}
@@ -673,7 +696,7 @@ let buckets=[],transactions=[],accounts=[],overrides={},
     isDemoMode=false,activeTxnId=null,pendingBid=null,
     txnFilter='month',viewMonthOffset=0,
     activeBucketId=null,bucketDetailYear=0,bucketDetailMonth=0,
-    pendingSplits=[],isSplitMode=false,lastSyncDetail='',pendingNetAmount=null;
+    pendingSplits=[],isSplitMode=false,lastSyncDetail='',pendingNetAmount=null,lastSyncRemovals=[];
 
 /* Storage */
 function loadStorage(){
@@ -690,6 +713,7 @@ function loadStorage(){
   lastSynced=rawS?new Date(rawS):null;
   try{const rawT=localStorage.getItem('cached_txns');if(rawT)transactions=JSON.parse(rawT);}catch{}
   try{const rawA=localStorage.getItem('cached_accounts');if(rawA)accounts=JSON.parse(rawA);}catch{}
+  try{const rawR=localStorage.getItem('last_sync_removals');if(rawR)lastSyncRemovals=JSON.parse(rawR);}catch{}
 }
 function saveBuckets(){localStorage.setItem('buckets',JSON.stringify(buckets))}
 function saveOverrides(){localStorage.setItem('cat_overrides',JSON.stringify(overrides))}
@@ -833,11 +857,42 @@ async function handleConnect(){
 async function handleSync(){if(!accessToken||isDemoMode)return;await sync();}
 
 /* Sync */
+function closeSyncResult(){qs('#sync-result-modal')?.remove();qs('#sync-result-backdrop')?.remove();}
+function showSyncResult(newCount,modifiedCount,removals){
+  closeSyncResult();
+  const bdrop=document.createElement('div');bdrop.className='sync-result-backdrop';bdrop.id='sync-result-backdrop';bdrop.onclick=closeSyncResult;
+  const modal=document.createElement('div');modal.className='sync-result-modal';modal.id='sync-result-modal';
+  const removalsHtml=removals.length?`
+<div class="sync-result-removals">
+  <div class="sync-removal-label">Removed (${removals.length})</div>
+  ${removals.map(t=>`
+  <div class="sync-removal-row">
+    <span class="sync-removal-name">${esc(t.name)}</span>
+    <span class="sync-removal-date">${t.date?fmtDate(t.date):''}</span>
+    <span class="sync-removal-amt">$${Math.abs(t.amount).toFixed(2)}</span>
+  </div>`).join('')}
+  <div class="sync-removal-why">Plaid removes pending transactions when they settle (and re-adds them with a permanent ID) or when they're cancelled.</div>
+</div>`:'';
+  modal.innerHTML=`
+<div class="sync-result-title">Sync Complete</div>
+<div class="sync-result-counts">${newCount} new · ${modifiedCount} modified · ${removals.length} removed</div>
+${removalsHtml}
+<div style="margin-top:20px;display:flex;justify-content:flex-end">
+  <button class="btn btn-outline btn-sm" onclick="closeSyncResult()">Dismiss</button>
+</div>`;
+  document.body.appendChild(bdrop);
+  document.body.appendChild(modal);
+}
+
 async function sync(){
   showLoad('Syncing transactions…');
   try{
     const{added,modified,removed,next_cursor,accounts:accts}=await post('transactions',{access_token:accessToken,cursor:cursor||undefined});
     const removedIds=new Set((removed||[]).map(t=>t.transaction_id));
+    lastSyncRemovals=transactions
+      .filter(t=>removedIds.has(t.transaction_id))
+      .map(t=>({name:t.merchant_name||t.name,amount:t.amount,date:txnDate(t)||t.date}));
+    if(lastSyncRemovals.length)localStorage.setItem('last_sync_removals',JSON.stringify(lastSyncRemovals));
     transactions=transactions.filter(t=>!removedIds.has(t.transaction_id));
     (modified||[]).forEach(u=>{const i=transactions.findIndex(t=>t.transaction_id===u.transaction_id);if(i>=0)transactions[i]=u;else transactions.push(u);});
     const addedIds=new Set((added||[]).map(t=>t.transaction_id));
@@ -851,7 +906,7 @@ async function sync(){
     const newCount=(added||[]).length;
     lastSyncDetail=newCount>0?` · ${newCount} new`:'· up to date';
     cacheTxns();render();
-    alert('Sync done — '+newCount+' new, '+(modified||[]).length+' modified, '+(removed||[]).length+' removed');
+    showSyncResult(newCount,(modified||[]).length,lastSyncRemovals);
   }catch(err){
     console.error('sync:',err);
     if(/INVALID_ACCESS_TOKEN|ITEM_LOGIN_REQUIRED/i.test(err.message)){clearAuth();render();alert('Bank session expired — please reconnect.');}
