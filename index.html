@@ -1088,7 +1088,7 @@ function renderBucketDetail(){
 
   container.innerHTML=`
 <div class="bucket-detail-header">
-  <button class="btn btn-ghost btn-sm" onclick="closeBucketDetail()"><- Back</button>
+  <button class="btn btn-ghost btn-sm" onclick="closeBucketDetail()">← Back</button>
   <div class="bucket-detail-title"><span>${b.icon}</span><span>${esc(b.name)}</span></div>
 </div>
 <div class="bucket-detail-summary" style="border-left:3px solid ${b.color}">
@@ -1098,7 +1098,7 @@ function renderBucketDetail(){
 </div>
 <div class="bucket-detail-filters">
   <span class="filters-label">Filter:</span>
-  <select class="detail-select" onchange="setBucketDetailYear(this.value)">${yearOpts}</select>
+  <select class="detail-select" onchange="setBucketDetailYear(this.value)">${yearOpts}</select></output>
   <select class="detail-select" onchange="setBucketDetailMonth(this.value)">${monthOpts}</select>
 </div>
 ${filtered.length?groupsHtml:'<div class="empty-state"><div class="empty-icon">✨</div><div class="empty-text">No transactions for this period</div></div>'}`;
