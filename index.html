@@ -995,7 +995,8 @@ function renderTotalCard(spend){
   </div>
 </div>
 <div class="seg-bar-track">${segs||'<div style="flex:1;opacity:0"></div>'}</div>
-${legend?`<div class="seg-legend">${legend}</div>`:''}`;}
+${legend?`<div class="seg-legend">${legend}</div>`:''}`;
+}
 
 /* Bucket cards */
 function renderBuckets(spend){
@@ -1424,17 +1425,14 @@ function exportForClaude(){
   const prevDate=new Date(vy,vm-2,1);
   const prevPfx=`${prevDate.getFullYear()}-${String(prevDate.getMonth()+1).padStart(2,'0')}`;
   const prevLabel=prevDate.toLocaleString('default',{month:'long',year:'numeric'});
-
   const monthTxns=transactions.filter(t=>txnDate(t)?.startsWith(vpfx));
   const incomeTxns=monthTxns.filter(t=>isIncome(t));
   const totalIncome=incomeTxns.reduce((s,t)=>s+Math.abs(t.amount),0);
-
   const spend=viewSpendByBucket();
   const tracked=buckets.filter(b=>!b.excludeFromBudget);
   const untracked=buckets.filter(b=>b.excludeFromBudget);
   const totalBudget=tracked.reduce((s,b)=>s+b.budget,0);
   const totalSpend=tracked.reduce((s,b)=>s+(spend[b.id]||0),0);
-
   const prevMonthTxns=transactions.filter(t=>txnDate(t)?.startsWith(prevPfx));
   const prevSpend={};buckets.forEach(b=>{prevSpend[b.id]=0;});
   prevMonthTxns.filter(t=>!isIncome(t)).forEach(t=>{
@@ -1442,9 +1440,7 @@ function exportForClaude(){
   });
   const prevIncome=prevMonthTxns.filter(t=>isIncome(t)).reduce((s,t)=>s+Math.abs(t.amount),0);
   const prevTotalSpend=tracked.reduce((s,b)=>s+(prevSpend[b.id]||0),0);
-
   const spendTxns=monthTxns.filter(t=>!isIncome(t)).sort((a,b)=>txnDate(b).localeCompare(txnDate(a)));
-
   const out=[];
   out.push(`# Personal Finance Review — ${monthLabel}`);
   out.push(`Generated: ${new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}`);
@@ -1455,86 +1451,72 @@ function exportForClaude(){
     out.push(`- **Total Income: $${totalIncome.toFixed(2)}**`);
   }else{out.push('- No income recorded this month');}
   out.push('');
-  out.push('## Budget Overview');
-  out.push(`Monthly Budget: $${totalBudget.toFixed(0)} | Spent: $${totalSpend.toFixed(2)} | ${totalBudget>0?((totalSpend/totalBudget)*100).toFixed(0):0}% of budget used`);
+  out.push('## Monthly Budget Overview');
+  out.push(`Budget: $${totalBudget.toFixed(0)} | Spent: $${totalSpend.toFixed(2)} | ${totalBudget>0?((totalSpend/totalBudget)*100).toFixed(0):0}% of budget`);
   if(totalIncome>0){
     out.push(`Spending as % of income: ${((totalSpend/totalIncome)*100).toFixed(0)}%`);
     out.push(`Net (income minus spending): $${(totalIncome-totalSpend).toFixed(2)}`);
-    const savings=totalIncome>0?((totalIncome-totalSpend)/totalIncome*100).toFixed(0):0;
-    out.push(`Implied savings rate: ${savings}%`);
+    out.push(`Implied savings rate: ${((totalIncome-totalSpend)/totalIncome*100).toFixed(0)}%`);
   }
   out.push('');
   out.push('## Spending by Category');
-  out.push('(Format: Category | Spent | Budget | % Used | vs Last Month | Status)');
+  out.push('Category | Spent | Budget | % Used | vs Last Month | Status');
   tracked.forEach(b=>{
     const s=spend[b.id]||0;
     const prev=prevSpend[b.id]||0;
-    const pct=b.budget>0?((s/b.budget)*100).toFixed(0):'N/A';
+    const pct=b.budget>0?((s/b.budget)*100).toFixed(0)+'%':'N/A';
     const status=b.budget>0?(s>b.budget?'OVER BUDGET':s>b.budget*0.85?'NEAR LIMIT':'OK'):'no budget';
-    const trend=prev>0?(s>prev*1.1?`UP $${(s-prev).toFixed(0)} vs last mo`:s<prev*0.9?`DOWN $${(prev-s).toFixed(0)} vs last mo`:`SIMILAR to last mo ($${prev.toFixed(0)})`):'(no prior data)';
-    out.push(`${b.icon} ${b.name} | $${s.toFixed(2)} spent | $${b.budget} budget | ${pct}% | ${trend} | ${status}`);
+    const trend=prev>0?(s>prev*1.1?`UP $${(s-prev).toFixed(0)} vs last mo`:s<prev*0.9?`DOWN $${(prev-s).toFixed(0)} vs last mo`:`~same as last mo ($${prev.toFixed(0)})`):'(no prior data)';
+    out.push(`${b.icon} ${b.name} | $${s.toFixed(2)} | $${b.budget} | ${pct} | ${trend} | ${status}`);
   });
   if(untracked.length){
     out.push('');
-    out.push('## Untracked Buckets (excluded from monthly budget)');
+    out.push('## Untracked Buckets (excluded from budget)');
     untracked.forEach(b=>{
-      const s=spend[b.id]||0;
-      const prev=prevSpend[b.id]||0;
-      out.push(`${b.icon} ${b.name}: $${s.toFixed(2)} spent this month${prev>0?` (vs $${prev.toFixed(2)} last month)`:''}`)
+      const s=spend[b.id]||0;const prev=prevSpend[b.id]||0;
+      out.push(`${b.icon} ${b.name}: $${s.toFixed(2)} spent${prev>0?` (vs $${prev.toFixed(2)} last month)`:''}`);
     });
   }
   if(prevMonthTxns.length){
     out.push('');
-    out.push('## Month-over-Month Summary');
-    out.push(`${prevLabel}: Income $${prevIncome>0?prevIncome.toFixed(2):'unknown'} | Spending $${prevTotalSpend.toFixed(2)}`);
-    out.push(`${monthLabel}: Income $${totalIncome>0?totalIncome.toFixed(2):'unknown'} | Spending $${totalSpend.toFixed(2)}`);
-    const spendChg=totalSpend-prevTotalSpend;
-    out.push(`Change in spending: ${spendChg>=0?'+':''}$${spendChg.toFixed(2)} (${prevTotalSpend>0?((spendChg/prevTotalSpend)*100).toFixed(0)+'%':'N/A'})`);
+    out.push('## Month-over-Month');
+    out.push(`${prevLabel}: Income $${prevIncome>0?'$'+prevIncome.toFixed(2):'unknown'} | Spending $${prevTotalSpend.toFixed(2)}`);
+    out.push(`${monthLabel}: Income $${totalIncome>0?'$'+totalIncome.toFixed(2):'unknown'} | Spending $${totalSpend.toFixed(2)}`);
+    const chg=totalSpend-prevTotalSpend;
+    out.push(`Change: ${chg>=0?'+':''}$${chg.toFixed(2)}${prevTotalSpend>0?' ('+((chg/prevTotalSpend)*100).toFixed(0)+'%)':''}`);
   }
   out.push('');
   out.push('## All Transactions This Month');
-  out.push('(Date | Merchant | Category | Amount)');
+  out.push('Date | Merchant | Account | Category | Amount');
   spendTxns.forEach(t=>{
-    const contribs=getTransactionContributions(t);
-    if(!contribs.length)return;
+    const contribs=getTransactionContributions(t);if(!contribs.length)return;
     const merchant=t.merchant_name||t.name||'Unknown';
-    const date=txnDate(t);
-    const acct=accountLabel(t);
+    const date=txnDate(t);const acct=accountLabel(t);
     if(contribs.length>1){
-      contribs.forEach(c=>{
-        const b=getBucket(c.bucketId);
-        out.push(`${date} | ${merchant}${acct?' ('+acct+')':''} | ${b?b.icon+' '+b.name:'Unknown'} | $${c.amount.toFixed(2)} [split]${t.pending?' [pending]':''}`);
-      });
+      contribs.forEach(c=>{const b=getBucket(c.bucketId);out.push(`${date} | ${merchant} | ${acct||'-'} | ${b?b.icon+' '+b.name:'?'} | $${c.amount.toFixed(2)} [split]${t.pending?' [pending]':''}`);});
     }else{
       const b=getBucket(contribs[0].bucketId);
-      out.push(`${date} | ${merchant}${acct?' ('+acct+')':''} | ${b?b.icon+' '+b.name:'Unknown'} | $${contribs[0].amount.toFixed(2)}${t.pending?' [pending]':''}`);
+      out.push(`${date} | ${merchant} | ${acct||'-'} | ${b?b.icon+' '+b.name:'?'} | $${contribs[0].amount.toFixed(2)}${t.pending?' [pending]':''}`);
     }
   });
   if(incomeTxns.length){
     out.push('');
-    out.push('## Income Transactions This Month');
-    incomeTxns.forEach(t=>{
-      const merchant=t.merchant_name||t.name||'Deposit';
-      out.push(`${txnDate(t)} | ${merchant} | Income | +$${Math.abs(t.amount).toFixed(2)}`);
-    });
+    out.push('## Income Transactions');
+    incomeTxns.forEach(t=>out.push(`${txnDate(t)} | ${t.merchant_name||t.name||'Deposit'} | Income | +$${Math.abs(t.amount).toFixed(2)}`));
   }
-  out.push('');
-  out.push('---');
-  out.push('Please analyze my finances above and provide:');
-  out.push('1. An assessment of my overall financial health and savings rate');
-  out.push('2. Categories where I am overspending relative to my income or budget');
-  out.push('3. Categories where my budget seems too high or too low based on actual spending patterns');
-  out.push('4. Any transactions that stand out as unusual, wasteful, or worth questioning');
-  out.push('5. Specific, actionable budget recommendations for next month');
-  out.push('6. A suggested savings target if I adjusted spending in key areas');
-
+  out.push('');out.push('---');
+  out.push('Please analyze my finances and provide:');
+  out.push('1. Overall financial health assessment and savings rate commentary');
+  out.push('2. Categories where I am overspending relative to income or budget (with specific $amounts)');
+  out.push('3. Categories where my budget seems misaligned with actual spending patterns');
+  out.push('4. Any transactions that look unusual, wasteful, or worth questioning');
+  out.push('5. Specific actionable budget adjustments for next month');
+  out.push('6. How much I could save if I optimized the top 2-3 problem categories');
   const text=out.join('\n');
   navigator.clipboard.writeText(text).then(()=>showExportModal(text,true)).catch(()=>showExportModal(text,false));
 }
-
 function showExportModal(text,copied){
-  document.getElementById('export-modal')?.remove();
-  document.getElementById('export-modal-bd')?.remove();
+  document.getElementById('export-modal')?.remove();document.getElementById('export-modal-bd')?.remove();
   const bd=document.createElement('div');
   bd.id='export-modal-bd';bd.className='sync-result-backdrop';
   bd.onclick=()=>{bd.remove();document.getElementById('export-modal')?.remove();};
@@ -1544,19 +1526,17 @@ function showExportModal(text,copied){
   const ta=document.createElement('textarea');
   ta.value=text;
   ta.style.cssText='flex:1;min-height:320px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;color:var(--text);font-family:monospace;font-size:11px;line-height:1.5;resize:none;margin:12px 0';
-  modal.innerHTML=`
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-  <div class="sync-result-title">Export for Claude</div>
-  ${copied?'<span style="font-size:11px;color:var(--green);font-weight:700">✓ Copied to clipboard</span>':''}
-</div>
-<div style="font-size:11px;color:var(--muted);margin-bottom:0">Paste this into any Claude chat for a personalized financial review.</div>`;
-  modal.appendChild(ta);
+  const hdr=document.createElement('div');
+  hdr.style.cssText='display:flex;justify-content:space-between;align-items:center;margin-bottom:4px';
+  hdr.innerHTML=`<div class="sync-result-title">Export for Claude</div><span style="font-size:11px;color:var(--green);font-weight:700">${copied?'✓ Copied to clipboard':''}</span>`;
+  const sub=document.createElement('div');
+  sub.style.cssText='font-size:11px;color:var(--muted)';
+  sub.textContent='Paste into any Claude chat for a personalized financial review.';
   const footer=document.createElement('div');
   footer.style.cssText='display:flex;justify-content:flex-end;gap:8px;margin-top:4px';
-  footer.innerHTML=`<button class="btn btn-primary btn-sm" id="copy-export-btn" onclick="navigator.clipboard.writeText(document.querySelector('#export-modal textarea').value);this.textContent='✓ Copied!';setTimeout(()=>this.textContent='Copy',2000)">Copy</button><button class="btn btn-outline btn-sm" onclick="document.getElementById('export-modal-bd').click()">Close</button>`;
-  modal.appendChild(footer);
-  document.body.appendChild(bd);
-  document.body.appendChild(modal);
+  footer.innerHTML='<button class="btn btn-primary btn-sm" onclick="navigator.clipboard.writeText(document.querySelector(\'#export-modal textarea\').value);this.textContent=\'✓ Copied!\';setTimeout(()=>this.textContent=\'Copy\',2000)">Copy</button><button class="btn btn-outline btn-sm" onclick="document.getElementById(\'export-modal-bd\').click()">Close</button>';
+  modal.appendChild(hdr);modal.appendChild(sub);modal.appendChild(ta);modal.appendChild(footer);
+  document.body.appendChild(bd);document.body.appendChild(modal);
 }
 
 (function init(){
